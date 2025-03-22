@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'register_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -55,7 +56,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
                       const Text("Password"),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -68,7 +69,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
 
-                      SizedBox(height: 20),
+                      SizedBox(height: 15),
 
                       Center(
                         child: SizedBox(
@@ -102,7 +103,14 @@ class _SignInPageState extends State<SignInPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterPage(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,
                       foregroundColor: Colors.black,
