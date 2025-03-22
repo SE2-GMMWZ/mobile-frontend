@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'sign_in_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -53,7 +54,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(width: 20),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignInPage(),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
