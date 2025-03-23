@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'sign_in_page.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<RegistrationPage> createState() => _RegistrationPageState();
 }
 
 String selectedValue = 'Sailor';
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +60,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: 'Sailor',
                           border: OutlineInputBorder(),
@@ -73,7 +72,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: 'sailor@gmail.com',
                           border: OutlineInputBorder(),
@@ -117,7 +115,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: '+48',
                           border: OutlineInputBorder(),

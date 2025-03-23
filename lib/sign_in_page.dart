@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'register_page.dart';
+import 'registration_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -107,7 +107,7 @@ class _SignInPageState extends State<SignInPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
+                          builder: (context) => const RegistrationPage(),
                         ),
                       );
                     },
