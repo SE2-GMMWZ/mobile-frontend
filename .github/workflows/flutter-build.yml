@@ -1,0 +1,82 @@
+name: Build Flutter APK and Upload to GitHub Release
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build:
+    name: Build and Release APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: 'stable'
+          cache: true
+
+      - name: Show Flutter & Dart version
+        run: flutter --version
+
+      - name: Disable Flutter analytics (optional)
+        run: flutter config --no-analytics
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Create GitHub release for dev
+        if: github.ref == 'refs/heads/dev'
+        id: create_release_dev
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: dev-latest
+          name: Latest Dev Build
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK to dev release
+        if: github.ref == 'refs/heads/dev'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: dev-latest
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub release for main
+        if: github.ref == 'refs/heads/main'
+        id: create_release_main
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: main-latest
+          name: Latest Main Build
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK to main release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: main-latest
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
