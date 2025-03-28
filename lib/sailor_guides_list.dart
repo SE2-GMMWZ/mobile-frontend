@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_drawer.dart';
+import 'guide_details.dart';
 
 class GuidesPage extends StatelessWidget {
   @override
@@ -41,9 +42,9 @@ class GuidesPage extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
-                  _guideItem('Discover Dockify', 'Dockify connects sailors with premium docking spots.'),
-                  _guideItem('Discover Harbor Haven', 'Harbor Haven offers a peaceful and luxurious docking experience.'),
-                  _guideItem('Ahoy to The Boatyard', 'The Boatyard is your vibrant hub for docking and exploring Mazury.'),
+                  _guideItem('Discover Dockify', 'Dockify connects sailors with premium docking spots.', context),
+                  _guideItem('Discover Harbor Haven', 'Harbor Haven offers a peaceful and luxurious docking experience.', context),
+                  _guideItem('Ahoy to The Boatyard', 'The Boatyard is your vibrant hub for docking and exploring Mazury.', context),
                 ],
               ),
             ),
@@ -53,7 +54,7 @@ class GuidesPage extends StatelessWidget {
     );
   }
 
-  Widget _guideItem(String title, String description) {
+  Widget _guideItem(String title, String description, BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
@@ -61,7 +62,14 @@ class GuidesPage extends StatelessWidget {
         title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(description),
         trailing: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GuideDetailsPage(title: title, description: description),
+            ),
+          );
+          },
           child: Text('Read more >'),
         ),
       ),
