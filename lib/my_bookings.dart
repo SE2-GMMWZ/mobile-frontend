@@ -30,20 +30,55 @@ class MyBookingsPage extends StatelessWidget {
   }
 
   Widget _bookingItem(String name, String location, String date) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: Icon(Icons.image, size: 50),
-        title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('$location\n$date'),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('999 PLN', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-            ElevatedButton(onPressed: () {}, child: Text('View Details >')),
-          ],
-        ),
+  return Card(
+    margin: EdgeInsets.symmetric(vertical: 8),
+    child: Padding(
+      padding: EdgeInsets.all(12.0), // Add padding for better spacing
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: Icon(Icons.image, size: 50),
+            title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('$location\n$date'),
+            trailing: Text('999 PLN', 
+              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.black), // Black border
+                    backgroundColor: Colors.grey[300], // Light grey background
+                  ),
+                  child: Text('Cancel Booking', style: TextStyle(color: Colors.black)),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.black), // Black border
+                    backgroundColor: Colors.grey[300], // Light grey background
+                  ),
+                  child: Text('View Details >', style: TextStyle(color: Colors.black)),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

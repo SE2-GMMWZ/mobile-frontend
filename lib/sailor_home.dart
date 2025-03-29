@@ -63,6 +63,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             SizedBox(height: 10),
+
             // Date Pickers
             Row(
               children: [
@@ -82,6 +83,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             SizedBox(height: 20),
+
             // List of Docking Options
             Expanded(
               child: ListView.builder(
@@ -99,16 +101,20 @@ class _HomePageState extends State<HomePage> {
 
   Widget _datePickerBox(String label, DateTime? date) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(5),
+        color: Colors.grey[300], // Light grey background
       ),
       child: Row(
         children: [
-          Text(date == null ? label : date.toString().split(' ')[0]),
+          Text(
+            date == null ? label : date.toString().split(' ')[0],
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           Spacer(),
-          Icon(Icons.calendar_today),
+          Icon(Icons.calendar_today, color: Colors.black),
         ],
       ),
     );
@@ -124,10 +130,22 @@ class _HomePageState extends State<HomePage> {
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('999 PLN', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-            ElevatedButton(
+            Text(
+              '999 PLN',
+              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 5),
+            OutlinedButton(
               onPressed: () {},
-              child: Text('View Details >'),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: Colors.black), // Black border
+                backgroundColor: Colors.grey[300], // Light grey background
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              ),
+              child: Text(
+                'View Details >',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
             ),
           ],
         ),
