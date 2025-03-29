@@ -1,34 +1,8 @@
 import 'package:flutter/material.dart';
 import 'app_drawer.dart';
-import 'dock_details.dart';
+import 'dock_details.dart'; // Assuming you have a details page
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  DateTime? fromDate;
-  DateTime? toDate;
-
-  Future<void> _selectDate(BuildContext context, bool isFrom) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromDate = picked;
-        } else {
-          toDate = picked;
-        }
-      });
-    }
-  }
-
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +18,7 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Search Bar & Filters
+            // Search Bar
             Row(
               children: [
                 Expanded(
@@ -65,33 +39,14 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 10),
 
-            // Date Pickers
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => _selectDate(context, true),
-                    child: _datePickerBox('From', fromDate),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => _selectDate(context, false),
-                    child: _datePickerBox('To', toDate),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-
-            // List of Docking Options
+            // List of Docks
             Expanded(
-              child: ListView.builder(
-                itemCount: 3, // Example number
-                itemBuilder: (context, index) {
-                  return _dockItem(index + 1);
-                },
+              child: ListView(
+                children: [
+                  _dockItem('Dock 1', 'Beautiful seaside dock in Gdynia', '999 PLN', context),
+                  _dockItem('Dock 2', 'Exclusive yacht spot in Sopot', '1299 PLN', context),
+                  _dockItem('Dock 3', 'Cozy marina in Mazury', '899 PLN', context),
+                ],
               ),
             ),
           ],
@@ -100,61 +55,30 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _datePickerBox(String label, DateTime? date) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.grey[300], // Light grey background
-      ),
-      child: Row(
-        children: [
-          Text(
-            date == null ? label : date.toString().split(' ')[0],
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Spacer(),
-          Icon(Icons.calendar_today, color: Colors.black),
-        ],
-      ),
-    );
-  }
-
-  Widget _dockItem(int index) {
+  Widget _dockItem(String title, String description, String price, BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-      padding: EdgeInsets.all(12.0), // Add padding for better spacing
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
+      child: ListTile(
         leading: Icon(Icons.image, size: 50), // Placeholder for image
-        title: Text('Dock $index', style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('Location $index\n30/11/2024 - 01/12/2024'),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(description),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              '999 PLN',
-              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 5),
-            OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.black), // Black border
-                backgroundColor: Colors.grey[300], // Light grey background
-              ),
-              child: Text('View Details >', style: TextStyle(color: Colors.black),
-              ),
+            Text(price, style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DockDetailsPage(title: title, description: description),
+                  ),
+                );
+              },
+              child: Text('View Details >'),
             ),
           ],
         ),
-          ),
-        ]
-      ),
       ),
     );
   }
