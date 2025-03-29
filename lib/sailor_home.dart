@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_drawer.dart';
+import 'dock_details.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -123,7 +124,12 @@ class _HomePageState extends State<HomePage> {
   Widget _dockItem(int index) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
+      child: Padding(
+      padding: EdgeInsets.all(12.0), // Add padding for better spacing
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
         leading: Icon(Icons.image, size: 50), // Placeholder for image
         title: Text('Dock $index', style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text('Location $index\n30/11/2024 - 01/12/2024'),
@@ -140,15 +146,15 @@ class _HomePageState extends State<HomePage> {
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.black), // Black border
                 backgroundColor: Colors.grey[300], // Light grey background
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               ),
-              child: Text(
-                'View Details >',
-                style: TextStyle(fontSize: 14, color: Colors.black),
+              child: Text('View Details >', style: TextStyle(color: Colors.black),
               ),
             ),
           ],
         ),
+          ),
+        ]
+      ),
       ),
     );
   }
