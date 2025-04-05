@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'app_drawer.dart';
-import 'dock_details.dart'; // Assuming you have a details page
+import '../app_drawer.dart';
+import 'sailor_guide_details.dart';
 
-class HomePage extends StatelessWidget {
+class GuidesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Book&Dock'),
+        title: Text('Guides'),
         actions: [
           IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
           IconButton(icon: Icon(Icons.account_circle), onPressed: () {}),
@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Search location...',
+                      hintText: 'Search...',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
                     ),
@@ -38,14 +38,13 @@ class HomePage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-
-            // List of Docks
+            // List of Guides
             Expanded(
               child: ListView(
                 children: [
-                  _dockItem('Dock 1', 'Beautiful seaside dock in Gdynia', '999 PLN', context),
-                  _dockItem('Dock 2', 'Exclusive yacht spot in Sopot', '1299 PLN', context),
-                  _dockItem('Dock 3', 'Cozy marina in Mazury', '899 PLN', context),
+                  _guideItem('Discover Dockify', 'Dockify connects sailors with premium docking spots.', context),
+                  _guideItem('Discover Harbor Haven', 'Harbor Haven offers a peaceful and luxurious docking experience.', context),
+                  _guideItem('Ahoy to The Boatyard', 'The Boatyard is your vibrant hub for docking and exploring Mazury.', context),
                 ],
               ),
             ),
@@ -55,29 +54,23 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _dockItem(String title, String description, String price, BuildContext context) {
+  Widget _guideItem(String title, String description, BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: Icon(Icons.image, size: 50), // Placeholder for image
         title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(description),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(price, style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DockDetailsPage(title: title, description: description),
-                  ),
-                );
-              },
-              child: Text('View Details >'),
+        trailing: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GuideDetailsPage(title: title, description: description),
             ),
-          ],
+          );
+          },
+          child: Text('Read more >'),
         ),
       ),
     );

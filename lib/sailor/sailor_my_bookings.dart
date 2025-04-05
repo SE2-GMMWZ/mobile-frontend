@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app_drawer.dart';
-import 'notifications.dart';
+import '../app_drawer.dart';
+import 'sailor_notifications.dart';
 
 class MyBookingsPage extends StatelessWidget {
   @override

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'sailor_home.dart';
-import 'sailor_guides_list.dart';
-import 'my_bookings.dart';
-import 'notifications.dart';
+import 'sailor/sailor_home.dart';
+import 'sailor/sailor_guides_list.dart';
+import 'sailor/sailor_my_bookings.dart';
+import 'sailor/sailor_notifications.dart';
 
 class AppDrawer extends StatelessWidget {
   @override

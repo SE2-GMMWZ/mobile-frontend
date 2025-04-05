@@ -1,5 +1,7 @@
+import 'package:book_and_dock_mobile/sailor/sailor_home.dart';
 import 'package:flutter/material.dart';
 import 'register_page.dart';
+import '../sailor/sailor_home.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -75,7 +77,11 @@ class _SignInPageState extends State<SignInPage> {
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: (){},
+                            onPressed: (){
+                              Navigator.push(context,
+                               MaterialPageRoute(builder: (context) => HomePage())
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,

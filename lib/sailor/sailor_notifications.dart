@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_drawer.dart';
+import '../app_drawer.dart';
 
 class NotificationsPage extends StatelessWidget {
   @override
