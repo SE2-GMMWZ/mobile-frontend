@@ -182,8 +182,7 @@ class _EditDockPageState extends State<EditDockPage> {
                         ),
                         child: const Text("Save Changes"),
                       ),
-                    ),
-                    
+                    ), 
                     
                   ],
                 ),
