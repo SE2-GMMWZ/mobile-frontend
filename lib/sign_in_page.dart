@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'registration_page.dart';
+import 'register_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -12,7 +12,6 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF2E4),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -108,7 +107,7 @@ class _SignInPageState extends State<SignInPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegistrationPage(),
+                          builder: (context) => const RegisterPage(),
                         ),
                       );
                     },

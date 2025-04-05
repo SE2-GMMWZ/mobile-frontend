@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'sign_in_page.dart';
-import 'registration_page.dart';
+import 'register_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -15,7 +15,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF2E4),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -48,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const RegistrationPage(),
+                            builder: (context) => const RegisterPage(),
                           ),
                         );
                       },

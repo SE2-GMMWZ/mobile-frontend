@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'sign_in_page.dart';
 
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
 String selectedValue = 'Sailor';
-final TextEditingController passwordController = TextEditingController();
-final TextEditingController confirmPasswordController = TextEditingController();
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF2E4),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
@@ -24,10 +21,49 @@ class _RegistrationPageState extends State<RegistrationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Sign In",
+                "Register",
                 style: TextStyle(fontSize: 30),
               ),
               const SizedBox(height: 20),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    width: 80,
+                    child: Icon(
+                      Icons.image,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
+                  ),
+
+                  SizedBox(width: 10,),
+
+                  Column(
+                    children: [
+                      const Text("Upload a profile picture", style: TextStyle(fontSize: 16),),
+
+                      TextButton(
+                        onPressed: (){},
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add_box_rounded,
+                              size: 20,
+                              color: Colors.black,
+                            ),
+
+                            const Text("Add an image", style: TextStyle(fontSize: 16, color: Colors.black),),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+
+                ],
+              ),
+              
 
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20),
@@ -63,6 +99,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
+                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: 'Sailor',
                           border: OutlineInputBorder(),
@@ -75,6 +112,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
+                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: 'sailor@gmail.com',
                           border: OutlineInputBorder(),
@@ -118,36 +156,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
+                        obscureText: true,
                         decoration: InputDecoration(
                           hintText: '+48',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    const Text("Password"),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    const Text("Repeat Password"),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: TextField(
-                        controller: confirmPasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Repeat Password',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -157,17 +168,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          final password = passwordController.text;
-                          final confirmPassword = confirmPasswordController.text;
-
-                          if (password != confirmPassword) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Password is not correctly confirmed!")),
-                            );
-                            return;
-                          }
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
@@ -216,12 +217,5 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ),
 
     );
-  }
-
-  @override
-  void dispose() {
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.dispose();
   }
 }

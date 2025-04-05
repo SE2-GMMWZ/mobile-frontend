@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'sailor_home.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Book & Dock'),
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
     );
   }
 }
