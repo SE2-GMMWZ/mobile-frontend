@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'app_drawer.dart';
-import 'dock_details.dart'; // Assuming you have a details page
+import '../app_drawer.dart';
+import '../dock_details.dart';
+import '../profile/my_profile.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -10,7 +11,13 @@ class HomePage extends StatelessWidget {
         title: Text('Book&Dock'),
         actions: [
           IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
-          IconButton(icon: Icon(Icons.account_circle), onPressed: () {}),
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () { 
+              Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MyProfilePage()));
+            }
+          ),
         ],
       ),
       drawer: AppDrawer(),
