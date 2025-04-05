@@ -20,7 +20,7 @@ class MyBookingsPage extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            _bookingItem('Dock 1', 'Real Address 12', '30/11/2024 - 30/11/2024'),
+
             _bookingItem('Docky', 'Bueno Street', '30/11/2024 - 01/11/2024'),
             _bookingItem('I’m Not', 'That Creative', '30/11/2024 - 01/11/2024'),
           ],
