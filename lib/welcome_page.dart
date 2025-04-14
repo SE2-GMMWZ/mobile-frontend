@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'auth/sign_in_page.dart';
 import 'auth/register_page.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key,});
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({super.key,});
   
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

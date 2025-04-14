@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
-import 'sailor_guide_details.dart';
+import 'guide_details.dart';
 
 class GuidesPage extends StatelessWidget {
   @override

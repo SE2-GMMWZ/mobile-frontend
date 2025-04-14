@@ -158,8 +158,7 @@ class _EditMyProfilePageState extends State<EditMyProfilePage> {
                           width: 150,
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => MyProfilePage()));
+                              Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey,
@@ -178,7 +177,9 @@ class _EditMyProfilePageState extends State<EditMyProfilePage> {
                         SizedBox(
                           width: 140,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,

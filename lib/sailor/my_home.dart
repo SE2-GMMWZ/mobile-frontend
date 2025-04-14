@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
-import 'sailor_dock_details.dart';
+import 'dock_details.dart';
 import '../profile/my_profile.dart';
 
 class HomePage extends StatelessWidget {

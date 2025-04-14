@@ -1,8 +1,8 @@
-import 'package:book_and_dock_mobile/sailor/sailor_home.dart';
+import 'package:book_and_dock_mobile/sailor/my_home.dart';
 import 'package:flutter/material.dart';
 
 import 'edit_my_profile.dart';
-import '../sailor/sailor_home.dart';
+import '../sailor/my_bookings.dart';
 import '../app_drawer.dart';
 import '../user_data.dart';
 
@@ -64,8 +64,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     width: 150,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => MyProfilePage()));
+                        Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => MyBookingsPage()));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
@@ -105,7 +105,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 ],
               ),
               
-
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20),
                 padding: const EdgeInsets.all(20),
