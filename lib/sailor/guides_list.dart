@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import 'guide_details.dart';
+import 'notifications.dart';
+import '../profile/my_profile.dart';
 
 class GuidesPage extends StatelessWidget {
   @override
@@ -9,8 +11,13 @@ class GuidesPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Guides'),
         actions: [
-          IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
-          IconButton(icon: Icon(Icons.account_circle), onPressed: () {}),
+          IconButton(icon: Icon(Icons.notifications), onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
+          }),
+          IconButton(icon: Icon(Icons.account_circle), onPressed: () {
+            Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MyProfilePage())); 
+              }),
         ],
       ),
       drawer: AppDrawer(),
