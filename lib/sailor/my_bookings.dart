@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import 'notifications.dart';
+import '../profile/my_profile.dart';
 
 class MyBookingsPage extends StatelessWidget {
   @override
@@ -12,7 +13,10 @@ class MyBookingsPage extends StatelessWidget {
           IconButton(icon: Icon(Icons.notifications), onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
           }),
-          IconButton(icon: Icon(Icons.account_circle), onPressed: () {}),
+          IconButton(icon: Icon(Icons.account_circle), onPressed: () {
+            Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MyProfilePage())); 
+              }),
         ],
       ),
       drawer: AppDrawer(),

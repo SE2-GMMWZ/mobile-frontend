@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
 
 class DockDetailsPage extends StatefulWidget {
   final String title;
@@ -110,7 +111,9 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
                 Text("${_calculateTotalPrice()} PLN\n/1 Day(s)",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green)),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+    showBookingCompleteDialog(context);
+  },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text("Book", style: TextStyle(color: Colors.white)),
                 ),
