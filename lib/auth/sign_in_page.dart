@@ -2,15 +2,57 @@ import 'package:book_and_dock_mobile/sailor/my_home.dart';
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 import '../sailor/my_home.dart';
+import '../services/api_service.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  const SignInPage({Key? key}) : super(key: key);
 
   @override
   State<SignInPage> createState() => _SignInPageState();
 }
 
 class _SignInPageState extends State<SignInPage> {
+  final ApiService api = ApiService();
+
+  final TextEditingController _emailCtrl = TextEditingController();
+  final TextEditingController _passwordCtrl = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSignIn() async {
+    setState(() => _isLoading = true);
+
+    final email = _emailCtrl.text.trim();
+    final password = _passwordCtrl.text;
+    final success = await api.login(email, password);
+
+    if (success) {
+      if (await api.getUser()) {
+        setState(() => _isLoading = false);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+        );
+      } else {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to fetch user profile')),
+        );
+      }
+    } else {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email or password')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +67,6 @@ class _SignInPageState extends State<SignInPage> {
               children: [
                 const Text(
                   "Sign In",
-                  textAlign: TextAlign.left,
                   style: TextStyle(fontSize: 30),
                 ),
                 const SizedBox(height: 20),
@@ -37,7 +78,7 @@ class _SignInPageState extends State<SignInPage> {
                     color: Colors.white,
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
                         blurRadius: 8,
@@ -49,52 +90,54 @@ class _SignInPageState extends State<SignInPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text("Email"),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Enter your email',
-                            border: OutlineInputBorder(),
-                          ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        controller: _emailCtrl,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your email',
+                          border: OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 15),
                       const Text("Password"),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: TextField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: 'Enter your password',
-                            border: OutlineInputBorder(),
-                          ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        controller: _passwordCtrl,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your password',
+                          border: OutlineInputBorder(),
                         ),
                       ),
-
-                      SizedBox(height: 15),
-
+                      const SizedBox(height: 15),
                       Center(
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: (){
-                              Navigator.pushReplacement(context,
-                               MaterialPageRoute(builder: (context) => HomePage())
-                              );
-                            },
+                            onPressed: _isLoading ? null : _handleSignIn,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,
-                              side: BorderSide(color: Colors.black, width: 2),
+                              side: const BorderSide(
+                                  color: Colors.black, width: 2),
                             ),
-                            child: const Text(
-                              'Sign In',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Sign In',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                           ),
                         ),
-                      )
-
+                      ),
                     ],
                   ),
                 ),
@@ -103,9 +146,9 @@ class _SignInPageState extends State<SignInPage> {
 
                 const Text(
                   "Don't have an account yet?",
-                  textAlign: TextAlign.left,
                   style: TextStyle(fontSize: 20),
                 ),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -113,14 +156,15 @@ class _SignInPageState extends State<SignInPage> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
+                          builder: (_) => const RegisterPage(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,
                       foregroundColor: Colors.black,
-                      side: BorderSide(color: Colors.black, width: 1),
+                      side:
+                          const BorderSide(color: Colors.black, width: 1),
                     ),
                     child: const Text(
                       'Register',
@@ -128,7 +172,6 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -137,3 +180,4 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 }
+
