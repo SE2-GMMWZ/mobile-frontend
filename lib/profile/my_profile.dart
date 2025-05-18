@@ -22,6 +22,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
   @override
   void initState() {
     super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() {
     _currentUserFuture = UserStorage.currentUser;
   }
 
@@ -34,9 +38,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
           IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => HomePage()));
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+              setState(() {
+                _loadUser();
+              });
             },
           ),
         ],
@@ -50,7 +59,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
               return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(child: Text('Error: \${snapshot.error}'));
             }
             final currentUser = snapshot.data!;
             return SingleChildScrollView(
@@ -63,11 +72,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()));
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage()),
+                          );
+                          setState(() {
+                            _loadUser();
+                          });
                         },
                       ),
                       SizedBox(
@@ -75,16 +87,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MyBookingsPage()));
+                              context,
+                              MaterialPageRoute(builder: (context) => MyBookingsPage()),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey,
                             foregroundColor: Colors.black,
-                            side: const BorderSide(
-                                color: Colors.black, width: 1),
+                            side: const BorderSide(color: Colors.black, width: 1),
                           ),
                           child: const Text(
                             'My Bookings',
@@ -147,20 +157,21 @@ class _MyProfilePageState extends State<MyProfilePage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
+                            onPressed: () async {
+                              await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const EditMyProfilePage(),
+                                  builder: (context) => const EditMyProfilePage(),
                                 ),
                               );
+                              setState(() {
+                                _loadUser();
+                              });
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,
-                              side: const BorderSide(
-                                  color: Colors.black, width: 2),
+                              side: const BorderSide(color: Colors.black, width: 2),
                             ),
                             child: const Text(
                               'Edit Profile',
