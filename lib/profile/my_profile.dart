@@ -1,7 +1,9 @@
 import 'package:book_and_dock_mobile/sailor/my_home.dart';
+import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 import 'edit_my_profile.dart';
+import '../auth/sign_in_page.dart';
 import '../sailor/my_bookings.dart';
 import '../app_drawer.dart';
 import '../user_data.dart';
@@ -167,6 +169,73 @@ class _MyProfilePageState extends State<MyProfilePage> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  
+                  // Logout button at the bottom
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Show logout confirmation dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Logout'),
+                              content: const Text('Are you sure you want to logout?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Close dialog
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    
+                                    // Perform logout
+                                    try {
+                                      await ApiService().logout();
+                                      Navigator.of(context).pop(); // Close dialog
+                                      
+                                      // Navigate to login screen and clear navigation stack
+                                     Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                          builder: (context) => const SignInPage(),
+                                        ),
+                                        (Route<dynamic> route) => false,
+                                      );
+                                      // Show success message
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Logged out successfully')),
+                                      );
+                                    } catch (e) {
+                                      // Show error message if logout fails
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Logout failed: ${e.toString()}')),
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Logout'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade700,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        side: BorderSide(color: Colors.red.shade900, width: 2),
+                      ),
+                      child: const Text(
+                        'Logout',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],

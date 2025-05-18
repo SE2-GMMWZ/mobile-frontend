@@ -46,6 +46,18 @@ class ApiService {
     }
   }
 
+  Future<bool> logout() async {
+    try {
+      final response = await _dio.post(
+        '/logout'
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Logout error: $e');
+      return false;
+    }
+  }
+
   Future<bool> register(UserProfile user, String password) async {
     try {
       final payload = user.toJson();
