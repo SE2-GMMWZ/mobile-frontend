@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
-import '../notifications.dart';
+import '../sailor/notifications.dart';
 import 'add_dock.dart';
 import 'edit_dock.dart';
 

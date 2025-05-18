@@ -1,4 +1,3 @@
-import 'package:book_and_dock_mobile/sailor/my_home.dart';
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 import '../sailor/my_home.dart';
