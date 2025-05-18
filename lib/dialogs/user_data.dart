@@ -2,14 +2,14 @@ class UserProfile {
   final String name;
   final String surname;
   final String email;
-  final String userType;
+  final String role;
   final String phone;
 
   UserProfile({
     required this.name,
     required this.surname,
     required this.email,
-    required this.userType,
+    required this.role,
     required this.phone,
   });
 }
@@ -22,7 +22,7 @@ void initState() {
     name: 'Kasia',
     surname: 'Kowalska',
     email: 'kkowalska@gmail.com',
-    userType: 'Sailor',
+    role: 'Sailor',
     phone: '+48 123 456 789',
   );
 }
