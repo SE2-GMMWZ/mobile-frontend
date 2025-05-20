@@ -3,6 +3,8 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import '../user_data.dart';
 import 'user_storage.dart';
+import '../docking_spot_data.dart';
+import 'docking_spot_storage.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -101,10 +103,28 @@ class ApiService {
         }
       }
       return false;
-    } catch (error, stackTrace) {
+    } catch (error) {
       print('Get user error: $error');
       return false;
     }
   }
+
+  Future<List<DockingSpotData>> getDockingSpots() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/docking-spots/list');
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((spot) => DockingSpotData.fromJson(spot as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get docking spots error: $e');
+      return [];
+    }
+  }
+
 }
 
