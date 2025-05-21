@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../docking_spot_data.dart';
+import '../data/docking_spot_data.dart';
 
 class DockingSpotStorage {
   static const _key = 'current_docking_spot';

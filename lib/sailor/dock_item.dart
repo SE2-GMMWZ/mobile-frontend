@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../docking_spot_data.dart';
+import '../data/docking_spot_data.dart';
 import 'dock_details.dart';
 
 class DockItem extends StatelessWidget {

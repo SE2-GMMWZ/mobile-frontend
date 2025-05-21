@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'my_profile.dart';
-import '../user_data.dart';
+import '../data/user_data.dart';
 import '../services/user_storage.dart';
 import '../services/api_service.dart';
 

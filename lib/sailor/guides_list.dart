@@ -1,10 +1,58 @@
+import 'package:book_and_dock_mobile/data/guides_data.dart';
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
-import 'guide_details.dart';
 import 'notifications.dart';
 import '../profile/my_profile.dart';
+import 'guide_item.dart';
+import '../services/api_service.dart';
 
-class GuidesPage extends StatelessWidget {
+class GuidesPage extends StatefulWidget {
+  @override
+  State<GuidesPage> createState() => _GuidesPageState();
+}
+
+class _GuidesPageState extends State<GuidesPage> {
+  List<GuidesData> guides = [];
+  List<GuidesData> filteredGuides = [];
+  bool isLoading = true;
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGuides();
+  }
+
+  Future<void> _loadGuides() async {
+    final fetched = await ApiService().getGuides();
+    print('Fetched spots: ${fetched.length}');
+    setState(() {
+      guides = fetched;
+      filteredGuides = fetched;
+      isLoading = false;
+    });
+  }
+
+  void _filterGuides(String query) {
+    if (query.isEmpty) {
+      // Show all if query is empty
+      setState(() {
+        searchQuery = '';
+        filteredGuides = guides;
+      });
+      return;
+    }
+
+    final filtered = guides.where((guide) {
+      return guide.title.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    setState(() {
+      searchQuery = query;
+      filteredGuides = filtered;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +83,7 @@ class GuidesPage extends StatelessWidget {
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
                     ),
+                    onChanged: _filterGuides,
                   ),
                 ),
                 SizedBox(width: 10),
@@ -47,37 +96,17 @@ class GuidesPage extends StatelessWidget {
             SizedBox(height: 10),
             // List of Guides
             Expanded(
-              child: ListView(
-                children: [
-                  _guideItem('Discover Dockify', 'Dockify connects sailors with premium docking spots.', context),
-                  _guideItem('Discover Harbor Haven', 'Harbor Haven offers a peaceful and luxurious docking experience.', context),
-                  _guideItem('Ahoy to The Boatyard', 'The Boatyard is your vibrant hub for docking and exploring Mazury.', context),
-                ],
-              ),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : filteredGuides.isEmpty
+                      ? Center(child: Text('No matching docking spots.'))
+                      : ListView(
+                          children: filteredGuides
+                              .map((guide) => GuideItem(guide: guide))
+                              .toList(),
+                        ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _guideItem(String title, String description, BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: Icon(Icons.image, size: 50), // Placeholder for image
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
-        trailing: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GuideDetailsPage(title: title, description: description),
-            ),
-          );
-          },
-          child: Text('Read more >'),
         ),
       ),
     );

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class DockingSpotData {
   final String? dock_id;
   final String name;

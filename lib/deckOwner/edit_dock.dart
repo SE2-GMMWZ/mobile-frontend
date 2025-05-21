@@ -1,4 +1,4 @@
-import 'package:book_and_dock_mobile/docking_spot_data.dart';
+import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:flutter/material.dart';
 
 class EditDockPage extends StatefulWidget {

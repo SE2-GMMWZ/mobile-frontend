@@ -3,7 +3,7 @@ import '../app_drawer.dart';
 import '../profile/my_profile.dart';
 import 'dock_item.dart';
 import 'notifications.dart';
-import '../docking_spot_data.dart';
+import '../data/docking_spot_data.dart';
 import '../services/api_service.dart';
 
 class HomePage extends StatefulWidget {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
-import '../docking_spot_data.dart';
+import '../data/docking_spot_data.dart';
+import '../services/api_service.dart';
 
 class DockDetailsPage extends StatefulWidget {
   final DockingSpotData spot;
@@ -14,7 +16,7 @@ class DockDetailsPage extends StatefulWidget {
 class _DockDetailsPageState extends State<DockDetailsPage> {
   DateTime? fromDate;
   DateTime? toDate;
-  int pricePerDay = 888;
+  int selectedPeople = 1;
 
   Future<void> _selectDate(BuildContext context, bool isFrom) async {
     DateTime? picked = await showDatePicker(
@@ -34,10 +36,39 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     }
   }
 
-  int _calculateTotalPrice() {
-    if (fromDate == null || toDate == null) return pricePerDay;
+  void _submitBooking() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sailorId = prefs.getString('sailor_id') ?? '';
+
+    if (sailorId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not logged in')));
+      return;
+    }
+
+    final bookingData = {
+      "dock_id": widget.spot.dock_id,
+      "start_date": fromDate,
+      "end_date": toDate,
+      "payment_method": "card",
+      "payment_status": "not",
+      "people": selectedPeople,
+      "sailor_id": sailorId,
+    };
+
+    try {
+      await ApiService().submitBooking(bookingData);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Booking submitted')));
+      showBookingCompleteDialog(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+
+  double _calculateTotalPrice() {
+    if (fromDate == null || toDate == null) return widget.spot.price_per_night;
     int days = toDate!.difference(fromDate!).inDays;
-    return days > 0 ? days * pricePerDay : pricePerDay;
+    return days > 0 ? days * widget.spot.price_per_night : widget.spot.price_per_night;
   }
 
   @override
@@ -111,6 +142,35 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
               ],
             ),
             SizedBox(height: 10),
+            DropdownButtonFormField<int>(
+              decoration: InputDecoration(
+                label: Text("Number Of People", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                filled: true,
+                fillColor: Colors.grey[300],
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // lower height
+              ),
+              value: selectedPeople,
+              style: TextStyle(fontSize: 14, color: Colors.black),
+              dropdownColor: Colors.grey[200],
+              items: List.generate(10, (index) => index + 1)
+                  .map((num) => DropdownMenuItem(value: num, child: Text(num.toString())))
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    selectedPeople = value;
+                  });
+                }
+              },
+            ),
+
+            SizedBox(height: 10),
 
             // Price & Booking Button
             Row(
@@ -127,7 +187,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
                 
                 ElevatedButton(
                   onPressed: () {
-                    showBookingCompleteDialog(context);
+                    _submitBooking();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text("Book", style: TextStyle(color: Colors.white)),
