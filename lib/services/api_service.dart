@@ -126,5 +126,22 @@ class ApiService {
     }
   }
 
+  Future<List<DockingSpotData>> getGuides() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/docking-spots/list');
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((spot) => DockingSpotData.fromJson(spot as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get docking spots error: $e');
+      return [];
+    }
+  }
+
 }
 

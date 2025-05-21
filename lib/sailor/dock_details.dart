@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
+import '../docking_spot_data.dart';
 
 class DockDetailsPage extends StatefulWidget {
-  final String title;
-  final String description;
+  final DockingSpotData spot;
 
-  DockDetailsPage({required this.title, required this.description});
+  const DockDetailsPage({super.key, required this.spot});
 
   @override
   _DockDetailsPageState createState() => _DockDetailsPageState();
@@ -45,7 +45,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(),
-        title: Text(widget.title),
+        title: Text(widget.spot.name),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -61,29 +61,37 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
             SizedBox(height: 10),
 
             // Title & Location
-            Text(widget.title, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            Text("Location: Port Mikołajki 2", style: TextStyle(fontSize: 16, color: Colors.grey[700])),
-            SizedBox(height: 20),
+            Text(widget.spot.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(widget.spot.town, style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+            SizedBox(height: 10),
 
             // Properties, Contact & Payment Options
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _infoColumn("Properties", [
-                  "• Boats up to 15m length",
-                  "• On-site fueling station",
-                  "• Free boat cleaning services",
-                  "• 24/7 surveillance"
-                ]),
-                _infoColumn("Contact", [
-                  "• Dockmaster Dave",
-                  "• +48 999 999 90",
-                  "• dockmaster.dave@sail.com"
-                ]),
-                _infoColumn("Payment Options", [
-                  "• On site",
-                  "• BLIK"
-                ]),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    children: [
+                      Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 5),
+                      Text(widget.spot.description, style: TextStyle(fontSize: 16)),
+                    ],
+                  )
+                ),
+
+                
+                Row(children: [
+                  Text("Services:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(width: 5),
+                  Text(widget.spot.services, style: TextStyle(fontSize: 16)),
+                ],),
+                
+                Row(children: [
+                  Text("Price for services:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(width: 5),
+                  Text(widget.spot.services_pricing.toString(), style: TextStyle(fontSize: 16)),
+                ],),
               ],
             ),
             SizedBox(height: 20),
@@ -108,12 +116,19 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("${_calculateTotalPrice()} PLN\n/1 Day(s)",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green)),
+                Column(
+                  children: [
+                    Text("${widget.spot.price_per_night} PLN/1 Day",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green)),
+                    Text("${widget.spot.price_per_person} PLN/ person",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green)),
+                  ],
+                ),
+                
                 ElevatedButton(
                   onPressed: () {
-    showBookingCompleteDialog(context);
-  },
+                    showBookingCompleteDialog(context);
+                  },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text("Book", style: TextStyle(color: Colors.white)),
                 ),
@@ -121,23 +136,9 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
             ),
             SizedBox(height: 20),
 
-            // Leave a Review
             _reviewSection()
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _infoColumn(String title, List<String> details) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          SizedBox(height: 5),
-          ...details.map((detail) => Text(detail, style: TextStyle(fontSize: 14))),
-        ],
       ),
     );
   }

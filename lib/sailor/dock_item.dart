@@ -34,10 +34,7 @@ class DockItem extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DockDetailsPage(
-                            title: spot.name,
-                            description: spot.description,
-                          ),
+                          builder: (context) => DockDetailsPage(spot: spot),
                         ),
                       );
                     },
