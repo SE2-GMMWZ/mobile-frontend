@@ -1,8 +1,13 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import '../user_data.dart';
+import '../data/user_data.dart';
 import 'user_storage.dart';
+import '../data/docking_spot_data.dart';
+import '../data/guides_data.dart';
+import '../data/bookings_data.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -101,9 +106,72 @@ class ApiService {
         }
       }
       return false;
-    } catch (error, stackTrace) {
+    } catch (error) {
       print('Get user error: $error');
       return false;
+    }
+  }
+
+  Future<List<DockingSpotData>> getDockingSpots() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/docking-spots/list');
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((spot) => DockingSpotData.fromJson(spot as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get docking spots error: $e');
+      return [];
+    }
+  }
+
+  Future<List<GuidesData>> getGuides() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/guides/list');
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((guide) => GuidesData.fromJson(guide as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get guides error: $e');
+      return [];
+    }
+  }
+
+  Future<List<BookingsData>> getBookigs() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/bookings/list');
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((booking) => BookingsData.fromJson(booking as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get booking error: $e');
+      return [];
+    }
+  }
+
+  Future<void> submitBooking(Map<String, dynamic> bookingData) async {
+    final response = await http.post(
+      Uri.parse('/bookings'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(bookingData),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to submit booking');
     }
   }
 }

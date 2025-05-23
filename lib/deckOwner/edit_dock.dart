@@ -1,4 +1,4 @@
-import 'package:book_and_dock_mobile/dock_data.dart';
+import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:flutter/material.dart';
 
 class EditDockPage extends StatefulWidget {
@@ -8,7 +8,7 @@ class EditDockPage extends StatefulWidget {
   State<EditDockPage> createState() => _EditDockPageState();
 }
 
-final dock = DockData(
+final dock = DockingSpotData(
   name: "Dock 1", 
   location: "Niegocin Lake", 
   pricePerNight: 200, 

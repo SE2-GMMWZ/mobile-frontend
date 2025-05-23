@@ -1,21 +1,13 @@
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
-import '../data/user_data.dart';
+import '../data/guides_data.dart';
 
-class UserStorage {
-  static const _key = 'current_user';
+class GuidesStorage {
+  static const _key = 'current_docking_spot';
 
-  static Future<void> save(UserProfile user) async {
+  static Future<void> save(GuidesData spot) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = jsonEncode({
-      'name': user.name,
-      'surname': user.surname,
-      'email': user.email,
-      'role': user.role,
-      'id': user.id,
-      'phone': user.phone,
-    });
+    final jsonString = jsonEncode(spot.toJson());
     await prefs.setString(_key, jsonString);
   }
 
@@ -24,12 +16,11 @@ class UserStorage {
     await prefs.remove(_key);
   }
 
-  static Future<UserProfile?> get currentUser async {
+  static Future<GuidesData?> get currentSpot async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_key);
     if (jsonString == null) return null;
     final Map<String, dynamic> data = jsonDecode(jsonString);
-    return UserProfile.fromJson(data);
+    return GuidesData.fromJson(data);
   }
 }
-

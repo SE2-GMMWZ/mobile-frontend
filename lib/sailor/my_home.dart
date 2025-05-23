@@ -1,74 +1,114 @@
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
-import 'dock_details.dart';
 import '../profile/my_profile.dart';
+import 'dock_item.dart';
 import 'notifications.dart';
+import '../data/docking_spot_data.dart';
+import '../services/api_service.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<DockingSpotData> spots = [];
+  List<DockingSpotData> filteredSpots = [];
+  bool isLoading = true;
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDockingSpots();
+  }
+
+  Future<void> _loadDockingSpots() async {
+    final fetched = await ApiService().getDockingSpots();
+    print('Fetched spots: ${fetched.length}');
+    setState(() {
+      spots = fetched;
+      filteredSpots = fetched;
+      isLoading = false;
+    });
+  }
+
+  void _filterSpots(String query) {
+    if (query.isEmpty) {
+      // Show all if query is empty
+      setState(() {
+        searchQuery = '';
+        filteredSpots = spots;
+      });
+      return;
+    }
+
+    final filtered = spots.where((spot) {
+      return spot.name.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    setState(() {
+      searchQuery = query;
+      filteredSpots = filtered;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Book&Dock'),
         actions: [
-          IconButton(icon: Icon(Icons.notifications), onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
-          }),
-          IconButton(icon: Icon(Icons.account_circle), onPressed: () {
-            Navigator.push(context,
-              MaterialPageRoute(builder: (context) => MyProfilePage())); 
+          IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
+              }),
+          IconButton(
+              icon: Icon(Icons.account_circle),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfilePage()));
               }),
         ],
       ),
       drawer: AppDrawer(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            _dockItem('Dock 1', 'Beautiful seaside dock in Gdynia', '999 PLN', context),
-            _dockItem('Dock 2', 'Exclusive yacht spot in Sopot', '1299 PLN', context),
-            _dockItem('Dock 3', 'Cozy marina in Mazury', '899 PLN', context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _dockItem(String name, String location, String price, BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              leading: Icon(Icons.image, size: 50), // Placeholder
-              title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(location),
-              trailing: Text(price, style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-            ),
-            SizedBox(height: 8),
+            // Search Bar
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DockDetailsPage(title: name, description: location),
-                        ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black),
-                      backgroundColor: Colors.grey[300],
+                  child: TextField(
+                    onChanged: _filterSpots,
+                    decoration: InputDecoration(
+                      hintText: 'Search by name...',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
                     ),
-                    child: Text('View Details >', style: TextStyle(color: Colors.black)),
                   ),
                 ),
+                SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.filter_list),
+                  onPressed: () {
+                    // You can add more filters here
+                  },
+                ),
               ],
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : filteredSpots.isEmpty
+                      ? Center(child: Text('No matching docking spots.'))
+                      : ListView(
+                          children: filteredSpots
+                              .map((spot) => DockItem(spot: spot))
+                              .toList(),
+                        ),
             ),
           ],
         ),

@@ -6,7 +6,7 @@ import 'edit_my_profile.dart';
 import '../auth/sign_in_page.dart';
 import '../sailor/my_bookings.dart';
 import '../app_drawer.dart';
-import '../user_data.dart';
+import '../data/user_data.dart';
 import '../services/user_storage.dart';
 
 class MyProfilePage extends StatefulWidget {
