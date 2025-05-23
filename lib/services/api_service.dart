@@ -3,6 +3,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import '../user_data.dart';
 import 'user_storage.dart';
+import '../models/guides_data.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -104,6 +105,41 @@ class ApiService {
     } catch (error, stackTrace) {
       print('Get user error: $error');
       return false;
+    }
+  }
+
+  Future<List<Guide>> getGuides() async {
+    try {
+      
+      final response = await _dio.get<List<dynamic>>('/guides');
+      
+      if (response.statusCode == 200 && response.data != null) {
+        
+        return response.data!.map((json) => Guide.fromJson(json)).toList();
+      } else {
+        
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching guides: $e');
+      
+      return [];
+    }
+  }
+  
+
+  Future<Guide?> getGuideById(String id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>('/guides/$id');
+      
+      if (response.statusCode == 200 && response.data != null) {
+        return Guide.fromJson(response.data!);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching guide details: $e');
+      return null;
     }
   }
 }
