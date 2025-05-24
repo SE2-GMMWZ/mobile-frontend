@@ -8,6 +8,7 @@ import 'user_storage.dart';
 import '../data/docking_spot_data.dart';
 import '../data/guides_data.dart';
 import '../data/bookings_data.dart';
+import '../data/notifications_data.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -174,5 +175,22 @@ class ApiService {
       throw Exception('Failed to submit booking');
     }
   }
+
+  Future<List<NotificationData>> getNotifications() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/notifications/list');
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((n) => NotificationData.fromJson(n as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get notifications error: $e');
+      return [];
+    }
+  }
+
 }
 
