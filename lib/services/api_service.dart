@@ -10,8 +10,8 @@ import '../data/guides_data.dart';
 import '../data/bookings_data.dart';
 import '../data/notifications_data.dart';
 import '../data/comments_data.dart';
-import '../data/rewievs_data.dart';
-
+import '../data/reviews_data.dart';
+ 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
 
