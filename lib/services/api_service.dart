@@ -9,6 +9,8 @@ import '../data/docking_spot_data.dart';
 import '../data/guides_data.dart';
 import '../data/bookings_data.dart';
 import '../data/notifications_data.dart';
+import '../data/comments_data.dart';
+import '../data/rewievs_data.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -191,6 +193,84 @@ class ApiService {
       return [];
     }
   }
+
+  
+  // COMMENTS
+  Future<List<CommentData>> getComments({int page = 1, int pageSize = 20}) async {
+    try {
+      final response = await _dio.get<List<dynamic>>(
+        '/comments/list',
+        queryParameters: {'page': page, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((c) => CommentData.fromJson(c as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get comments error: $e');
+      return [];
+    }
+  }
+
+  Future<CommentData?> getCommentById(String id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>('/comments/$id');
+      if (response.statusCode == 200 && response.data != null) {
+        return CommentData.fromJson(response.data!);
+      }
+      return null;
+    } catch (e) {
+      print('Get comment by id error: $e');
+      return null;
+    }
+  }
+
+  // REVIEWS
+  Future<List<ReviewData>> getReviews() async {
+    try {
+      final response = await _dio.get<List<dynamic>>('/reviews/list');
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data!
+            .map((r) => ReviewData.fromJson(r as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get reviews error: $e');
+      return [];
+    }
+  }
+
+  Future<ReviewData?> getReviewById(String id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>('/reviews/$id');
+      if (response.statusCode == 200 && response.data != null) {
+        return ReviewData.fromJson(response.data!);
+      }
+      return null;
+    } catch (e) {
+      print('Get review by id error: $e');
+      return null;
+    }
+  }
+
+  Future<bool> createReview(ReviewData review) async {
+    try {
+      final response = await _dio.post(
+        '/reviews',
+        data: review.toJson(),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print('Create review error: $e');
+      return false;
+    }
+  }
+// ...existing code...
 
 }
 

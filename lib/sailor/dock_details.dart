@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
 import '../data/docking_spot_data.dart';
 import '../services/api_service.dart';
+import '../data/comments_data.dart';
+import '../data/reviews_data.dart';
 
 class DockDetailsPage extends StatefulWidget {
   final DockingSpotData spot;
@@ -17,6 +19,12 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   DateTime? fromDate;
   DateTime? toDate;
   int selectedPeople = 1;
+
+  List<CommentData> _comments = [];
+  bool _loadingComments = true;
+
+  TextEditingController _reviewController = TextEditingController();
+  int _selectedRating = 0;
 
   Future<void> _selectDate(BuildContext context, bool isFrom) async {
     DateTime? picked = await showDatePicker(
@@ -34,6 +42,29 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
         }
       });
     }
+  }
+
+ @override
+  void initState() {
+    super.initState();
+    _fetchComments();
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchComments() async {
+    setState(() {
+      _loadingComments = true;
+    });
+    final comments = await ApiService().getComments();
+    setState(() {
+      _comments = comments.where((c) => c.guideId == widget.spot.dock_id).toList();
+      _loadingComments = false;
+    });
   }
 
   void _submitBooking() async {
@@ -70,6 +101,35 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     int days = toDate!.difference(fromDate!).inDays;
     return days > 0 ? days * widget.spot.price_per_night : widget.spot.price_per_night;
   }
+
+
+Future<void> _submitReview() async {
+  final prefs = await SharedPreferences.getInstance();
+  final reviewerId = prefs.getString('sailor_id') ?? '';
+  if (reviewerId.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not logged in')));
+    return;
+  }
+
+  final review = ReviewData(
+    reviewId: '', // Let backend generate or use a UUID if needed
+    reviewerId: reviewerId,
+    comment: _reviewController.text,
+    dateOfReview: DateTime.now().toIso8601String(),
+    rating: _selectedRating,
+  );
+
+  final success = await ApiService().createReview(review);
+  if (success) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Review submitted!')));
+    _reviewController.clear();
+    setState(() {
+      _selectedRating = 0;
+    });
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit review')));
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -129,8 +189,15 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
 
             // Comments
             Text("Comments:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            _commentItem("Anna_Sailor87", "Loved this guide!"),
-            _commentItem("Captain_Jack", "This guide inspired my trip!"),
+            _loadingComments
+                ? Center(child: CircularProgressIndicator())
+                : (_comments.isEmpty
+                    ? Text("No comments yet.")
+                    : Column(
+                        children: _comments
+                            .map((c) => _commentItem(c.userId, c.content))
+                            .toList(),
+                      )),
             SizedBox(height: 20),
 
             // Date Pickers & Price
@@ -240,48 +307,42 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     );
   }
 
-  Widget _reviewSection() {
+   Widget _reviewSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Review Header
         Text("Leave review", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        Text("example text", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
         SizedBox(height: 5),
-
-        // Star Rating (Static for now)
         Row(
-          children: List.generate(5, (index) => Icon(Icons.star_border, color: Colors.black, size: 28)),
+          children: List.generate(5, (index) => IconButton(
+            icon: Icon(
+              index < _selectedRating ? Icons.star : Icons.star_border,
+              color: Colors.black,
+              size: 28,
+            ),
+            onPressed: () {
+              setState(() {
+                _selectedRating = index + 1;
+              });
+            },
+          )),
         ),
         SizedBox(height: 10),
-
-        // Review Input Box
         TextField(
+          controller: _reviewController,
           decoration: InputDecoration(
             hintText: "Write your review...",
             border: OutlineInputBorder(),
           ),
           maxLines: 3,
+          onChanged: (_) => setState(() {}),
         ),
         SizedBox(height: 10),
-
-        // Review Submission (Static User)
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey[400],
-              child: Icon(Icons.person, color: Colors.white),
-            ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Reviewer name", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text("Date", style: TextStyle(color: Colors.grey[600])),
-              ],
-            ),
-          ],
+        ElevatedButton(
+          onPressed: _selectedRating > 0 && _reviewController.text.isNotEmpty
+              ? _submitReview
+              : null,
+          child: Text("Submit Review"),
         ),
       ],
     );
