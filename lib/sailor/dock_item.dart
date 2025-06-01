@@ -22,7 +22,7 @@ class DockItem extends StatelessWidget {
               title: Text(spot.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               subtitle: Text(spot.town),
               trailing: Text(
-                'from ${spot.price_per_night + spot.price_per_person} \PLN',
+                'from ${(spot.price_per_night + spot.price_per_person).toStringAsFixed(2)} PLN',
                 style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ),

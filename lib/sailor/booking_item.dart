@@ -2,6 +2,7 @@ import 'package:book_and_dock_mobile/data/bookings_data.dart';
 import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:flutter/material.dart';
+import '../dialogs/details_booking_dialog.dart';
 
 
 class BookingItem extends StatefulWidget {
@@ -96,7 +97,9 @@ class _BookingItemState extends State<BookingItem> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      viewDetailsBooking(context, widget.booking, dock);
+                    },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.black),
                       backgroundColor: Colors.grey[300],
