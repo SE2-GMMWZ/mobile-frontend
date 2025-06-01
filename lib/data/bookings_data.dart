@@ -26,8 +26,8 @@ class BookingsData {
       dockId: json['dock_id'] ?? '',
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
-      paymentMethod: json['payment_method'] ?? '',
-      paymentStatus: json['payment_status'] ?? '',
+      paymentMethod: json['payment_method'] ?? 'in-person',
+      paymentStatus: json['payment_status'] ?? 'unpaid',
       people: json['people'] ?? '',
     );
   }

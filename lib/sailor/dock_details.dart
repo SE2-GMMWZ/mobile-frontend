@@ -116,7 +116,7 @@ Future<void> _submitReview() async {
     reviewerId: reviewerId,
     comment: _reviewController.text,
     dateOfReview: DateTime.now().toIso8601String(),
-    rating: _selectedRating,
+    rating: _selectedRating.toString(),
   );
 
   final success = await ApiService().createReview(review);

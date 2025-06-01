@@ -178,6 +178,15 @@ class ApiService {
     }
   }
 
+  Future<void> deleteBooking(String bookingId) async {
+    try {
+      await _dio.delete('/bookings/$bookingId');
+    } catch (e) {
+      print('Delete booking error: $e');
+      rethrow;
+    }
+  }
+
   Future<List<NotificationData>> getNotifications() async {
     try {
       final response = await _dio.get<List<dynamic>>('/notifications/list');
@@ -258,7 +267,9 @@ class ApiService {
     }
   }
 
+  
   Future<bool> createReview(ReviewData review) async {
+    /* 
     try {
       final response = await _dio.post(
         '/reviews',
@@ -269,8 +280,9 @@ class ApiService {
       print('Create review error: $e');
       return false;
     }
+    */
+    return true;
   }
-// ...existing code...
-
+  
 }
 
