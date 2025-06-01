@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:book_and_dock_mobile/data/user_data.dart';
 import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +12,8 @@ import '../data/docking_spot_data.dart';
 import '../services/api_service.dart';
 import '../data/comments_data.dart';
 import '../data/reviews_data.dart';
+
+const stripeSecretKey = 'sk_test_51RQ47u2fvPZJA4JMDXOynqvaYiyryioapNmI1BKD4FRJN6nllgd6a4WZrsFmrevqSbAEHC8TwomV7GO2jua5AF2m00igKzTzo0'; // To jest nielegalne, tak sie nie robi NIGDY (oprocz dzisiaj) 
 
 void showBookingSummaryDialog(BuildContext context, Map<String, dynamic> bookingData) {
   showDialog(
@@ -85,6 +90,31 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     _reviewController.dispose();
     super.dispose();
   }
+
+  Future<String> _createPaymentIntent(int amountInPLN) async {
+    final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $stripeSecretKey',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {
+        'amount': (amountInPLN * 100).toString(),
+        'currency': 'pln',
+        'payment_method_types[]': 'card',
+      },
+    );
+
+    final jsonResponse = json.decode(response.body);
+    if (jsonResponse['client_secret'] != null) {
+      return jsonResponse['client_secret'];
+    } else {
+      throw Exception('Stripe error: ${jsonResponse['error']['message']}');
+    }
+  }
+
 
   Future<void> _fetchComments() async {
     setState(() {
@@ -262,17 +292,32 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
                       return;
                     }
 
-                    final bookingData = {
-                      "dock_id": widget.spot.dock_id,
-                      "start_date": fromDate!.toUtc().toIso8601String(),
-                      "end_date": toDate!.toUtc().toIso8601String(),
-                      "payment_method": "in-person",
-                      "payment_status": "paid",
-                      "people": selectedPeople,
-                      "sailor_id": user.id,
-                    };
-
                     try {
+                      final days = toDate!.difference(fromDate!).inDays;
+                      final totalPrice = days * widget.spot.price_per_night + selectedPeople * widget.spot.price_per_person;
+
+                      final clientSecret = await _createPaymentIntent((totalPrice * 1).toInt());
+
+
+                      await Stripe.instance.initPaymentSheet(
+                        paymentSheetParameters: SetupPaymentSheetParameters(
+                          paymentIntentClientSecret: clientSecret,
+                          merchantDisplayName: 'Book & Dock Dev',
+                        ),
+                      );
+
+                      await Stripe.instance.presentPaymentSheet();
+
+                      final bookingData = {
+                        "dock_id": widget.spot.dock_id,
+                        "start_date": fromDate!.toUtc().toIso8601String(),
+                        "end_date": toDate!.toUtc().toIso8601String(),
+                        "payment_method": "online",
+                        "payment_status": "paid",
+                        "people": selectedPeople,
+                        "sailor_id": user.id,
+                      };
+
                       print(jsonEncode(bookingData));
                       await ApiService().submitBooking(bookingData);
                       showBookingCompleteDialog(context);
@@ -280,7 +325,6 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
                     }
                   },
-
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text("Book", style: TextStyle(color: Colors.white)),
                 ),
