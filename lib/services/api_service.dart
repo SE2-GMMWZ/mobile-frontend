@@ -211,7 +211,10 @@ class ApiService {
 
   Future<List<NotificationData>> getNotifications() async {
     try {
-      final response = await _dio.get<List<dynamic>>('/notifications/list');
+      final currentUser = await UserStorage.currentUser;
+      if (currentUser == null) return [];
+
+      final response = await _dio.get<List<dynamic>>('/notifications/list?sailor_id=${currentUser.id}');
       if (response.statusCode == 200 && response.data != null) {
         return response.data!
             .map((n) => NotificationData.fromJson(n as Map<String, dynamic>))
@@ -225,7 +228,6 @@ class ApiService {
     }
   }
 
-  
   // COMMENTS
   Future<List<CommentData>> getComments({int page = 1, int pageSize = 20}) async {
     try {

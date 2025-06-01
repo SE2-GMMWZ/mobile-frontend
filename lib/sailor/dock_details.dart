@@ -291,7 +291,11 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Start date must be before end date.')));
                       return;
                     }
-
+                    if (fromDate!.isBefore(DateTime.now())) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Start date cannot be in the past.'),));
+                      return;
+                    }
+                    
                     try {
                       final days = toDate!.difference(fromDate!).inDays;
                       final totalPrice = days * widget.spot.price_per_night + selectedPeople * widget.spot.price_per_person;
