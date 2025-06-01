@@ -1,14 +1,13 @@
 import 'package:book_and_dock_mobile/data/bookings_data.dart';
 import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
+import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 class BookingItem extends StatelessWidget {
   final BookingsData booking;
+  final VoidCallback? onDeleted;
 
-  const BookingItem({
-    super.key,
-    required this.booking,
-  });
+  const BookingItem({required this.booking, this.onDeleted});
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +36,28 @@ class BookingItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: Text("Delete Booking"),
+                          content: Text("Are you sure you want to delete this booking?"),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text("Cancel")),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text("Delete")),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        try {
+                          await ApiService().deleteBooking(booking.bookingId ?? '');
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Booking deleted')));
+                          if (onDeleted != null) onDeleted!();
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete booking')));
+                        }
+                      }
                     },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.black),
