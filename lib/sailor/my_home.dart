@@ -1,3 +1,5 @@
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import '../profile/my_profile.dart';
@@ -12,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Future<UserProfile?> _currentUserFuture;
   List<DockingSpotData> spots = [];
   List<DockingSpotData> filteredSpots = [];
   bool isLoading = true;
@@ -20,7 +23,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _loadUser();
     _loadDockingSpots();
+  }
+
+  void _loadUser() {
+    _currentUserFuture = UserStorage.currentUser;
   }
 
   Future<void> _loadDockingSpots() async {
@@ -106,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                       ? Center(child: Text('No matching docking spots.'))
                       : ListView(
                           children: filteredSpots
-                              .map((spot) => DockItem(spot: spot))
+                              .map((spot) => DockItem(spot: spot, currentUser: _currentUserFuture,))
                               .toList(),
                         ),
             ),

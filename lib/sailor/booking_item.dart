@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 
 class BookingItem extends StatelessWidget {
   final BookingsData booking;
-  //final DockingSpotData dock;
 
   const BookingItem({
     super.key,
     required this.booking,
-    //required this.dock,
   });
 
   @override
@@ -23,8 +21,12 @@ class BookingItem extends StatelessWidget {
           children: [
             ListTile(
               leading: Icon(Icons.image, size: 50),
-              title: Text(booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('${booking.people}\n${booking.startDate} - ${booking.endDate}'),
+              title: Text(booking.dockName ?? booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(
+                'Booking for ${booking.people} person/s\n'
+                '${DateTime.parse(booking.startDate).toLocal().toString().split(' ')[0]} - '
+                '${DateTime.parse(booking.endDate).toLocal().toString().split(' ')[0]}',
+              ),
               trailing: Text(
                 '999 PLN', // replace with actual price if available
                 style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
@@ -35,7 +37,9 @@ class BookingItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      
+                    },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.black),
                       backgroundColor: Colors.grey[300],

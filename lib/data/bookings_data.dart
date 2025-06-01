@@ -7,6 +7,7 @@ class BookingsData {
   final String paymentMethod;
   final String paymentStatus;
   final String people;
+  String? dockName;
 
   BookingsData({
     this.bookingId,
@@ -21,14 +22,14 @@ class BookingsData {
 
   factory BookingsData.fromJson(Map<String, dynamic> json) {
     return BookingsData(
-      bookingId: json['booking_id'] as String?,
-      sailorId: json['sailor_id'] ?? '',
-      dockId: json['dock_id'] ?? '',
+      bookingId: json['booking_id']?.toString(),
+      sailorId: json['sailor_id']?.toString() ?? '',
+      dockId: json['dock_id']?.toString() ?? '',
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
-      paymentMethod: json['payment_method'] ?? 'in-person',
-      paymentStatus: json['payment_status'] ?? 'unpaid',
-      people: json['people'] ?? '',
+      paymentMethod: json['payment_method'] ?? '',
+      paymentStatus: json['payment_status'] ?? '',
+      people: json['people']?.toString() ?? '',
     );
   }
 

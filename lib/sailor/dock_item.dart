@@ -1,11 +1,13 @@
+import 'package:book_and_dock_mobile/data/user_data.dart';
 import 'package:flutter/material.dart';
 import '../data/docking_spot_data.dart';
 import 'dock_details.dart';
 
 class DockItem extends StatelessWidget {
   final DockingSpotData spot;
+  final Future<UserProfile?> currentUser;
 
-  const DockItem({super.key, required this.spot});
+  const DockItem({super.key, required this.spot, required this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class DockItem extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DockDetailsPage(spot: spot),
+                          builder: (context) => DockDetailsPage(spot: spot, currentUser: currentUser,),
                         ),
                       );
                     },

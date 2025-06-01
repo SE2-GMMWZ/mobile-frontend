@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
@@ -6,10 +10,36 @@ import '../services/api_service.dart';
 import '../data/comments_data.dart';
 import '../data/reviews_data.dart';
 
+void showBookingSummaryDialog(BuildContext context, Map<String, dynamic> bookingData) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Booking Summary"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: bookingData.entries.map((entry) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text("${entry.key}: ${entry.value}"),
+          );
+        }).toList(),
+      ),
+      actions: [
+        TextButton(
+          child: Text("Close"),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    ),
+  );
+}
+
 class DockDetailsPage extends StatefulWidget {
   final DockingSpotData spot;
+  final Future<UserProfile?> currentUser;
 
-  const DockDetailsPage({super.key, required this.spot});
+  const DockDetailsPage({super.key, required this.spot, required this.currentUser});
 
   @override
   _DockDetailsPageState createState() => _DockDetailsPageState();
@@ -67,35 +97,6 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     });
   }
 
-  void _submitBooking() async {
-    final prefs = await SharedPreferences.getInstance();
-    final sailorId = prefs.getString('sailor_id') ?? '';
-
-    if (sailorId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not logged in')));
-      return;
-    }
-
-    final bookingData = {
-      "dock_id": widget.spot.dock_id,
-      "start_date": fromDate,
-      "end_date": toDate,
-      "payment_method": "card",
-      "payment_status": "not",
-      "people": selectedPeople,
-      "sailor_id": sailorId,
-    };
-
-    try {
-      await ApiService().submitBooking(bookingData);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Booking submitted')));
-      showBookingCompleteDialog(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
-
-
   double _calculateTotalPrice() {
     if (fromDate == null || toDate == null) return widget.spot.price_per_night;
     int days = toDate!.difference(fromDate!).inDays;
@@ -103,33 +104,33 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   }
 
 
-Future<void> _submitReview() async {
-  final prefs = await SharedPreferences.getInstance();
-  final reviewerId = prefs.getString('sailor_id') ?? '';
-  if (reviewerId.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not logged in')));
-    return;
-  }
+  Future<void> _submitReview() async {
+    final prefs = await SharedPreferences.getInstance();
+    final reviewerId = prefs.getString('sailor_id') ?? '';
+    if (reviewerId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not logged in')));
+      return;
+    }
 
-  final review = ReviewData(
-    reviewId: '', // Let backend generate or use a UUID if needed
-    reviewerId: reviewerId,
-    comment: _reviewController.text,
-    dateOfReview: DateTime.now().toIso8601String(),
-    rating: _selectedRating.toString(),
-  );
+    final review = ReviewData(
+      reviewId: '', // Let backend generate or use a UUID if needed
+      reviewerId: reviewerId,
+      comment: _reviewController.text,
+      dateOfReview: DateTime.now().toIso8601String(),
+      rating: _selectedRating.toString(),
+    );
 
-  final success = await ApiService().createReview(review);
-  if (success) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Review submitted!')));
-    _reviewController.clear();
-    setState(() {
-      _selectedRating = 0;
-    });
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit review')));
+    final success = await ApiService().createReview(review);
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Review submitted!')));
+      _reviewController.clear();
+      setState(() {
+        _selectedRating = 0;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit review')));
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -253,9 +254,41 @@ Future<void> _submitReview() async {
                 ),
                 
                 ElevatedButton(
-                  onPressed: () {
-                    _submitBooking();
+                  onPressed: () async {
+                    final user = await UserStorage.currentUser;
+                    if (user == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('You must be logged in')));
+                      return;
+                    }
+
+                    if (fromDate == null || toDate == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select both start and end dates.')));
+                      return;
+                    }
+                    if (fromDate!.isAfter(toDate!)) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Start date must be before end date.')));
+                      return;
+                    }
+
+                    final bookingData = {
+                      "dock_id": widget.spot.dock_id,
+                      "start_date": fromDate!.toUtc().toIso8601String(),
+                      "end_date": toDate!.toUtc().toIso8601String(),
+                      "payment_method": "in-person",
+                      "payment_status": "paid",
+                      "people": selectedPeople,
+                      "sailor_id": user.id,
+                    };
+
+                    try {
+                      print(jsonEncode(bookingData));
+                      await ApiService().submitBooking(bookingData);
+                      showBookingCompleteDialog(context);
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
                   },
+
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text("Book", style: TextStyle(color: Colors.white)),
                 ),

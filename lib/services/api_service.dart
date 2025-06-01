@@ -167,14 +167,18 @@ class ApiService {
   }
 
   Future<void> submitBooking(Map<String, dynamic> bookingData) async {
-    final response = await http.post(
-      Uri.parse('/bookings'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(bookingData),
-    );
+    try {
+      final response = await _dio.post(
+        '/bookings',
+        data: bookingData,
+      );
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to submit booking');
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Failed to submit booking');
+      }
+    } catch (e) {
+      print('Submit booking error: $e');
+      rethrow;
     }
   }
 
@@ -185,6 +189,18 @@ class ApiService {
       print('Delete booking error: $e');
       rethrow;
     }
+  }
+
+  Future<DockingSpotData?> getDockById(String dockId) async {
+    try {
+      final response = await _dio.get('/docks/$dockId');
+      if (response.statusCode == 200 && response.data != null) {
+        return DockingSpotData.fromJson(response.data);
+      }
+    } catch (e) {
+      print("Failed to get dock: $e");
+    }
+    return null;
   }
 
   Future<List<NotificationData>> getNotifications() async {
