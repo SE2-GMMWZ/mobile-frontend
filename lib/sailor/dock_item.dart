@@ -19,12 +19,11 @@ class DockItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              leading: const Icon(Icons.image, size: 50), // Placeholder
-              title: Text(spot.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(spot.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
               subtitle: Text(spot.town),
               trailing: Text(
-                '${spot.price_per_night} \$',
-                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                '~${spot.price_per_night} \$',
+                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             const SizedBox(height: 8),

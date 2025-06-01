@@ -105,28 +105,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     ],
                   ),
 
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      SizedBox(
-                        width: 80,
-                        child: Icon(
-                          Icons.image,
-                          size: 80,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "My profile picture",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-
                   const SizedBox(height: 20),
 
                   Container(

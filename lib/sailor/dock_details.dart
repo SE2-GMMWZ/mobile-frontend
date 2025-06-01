@@ -144,14 +144,6 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Dock Image Placeholder
-            Container(
-              height: 200,
-              color: Colors.grey[300],
-              child: Center(child: Icon(Icons.image, size: 100, color: Colors.grey[600])),
-            ),
-            SizedBox(height: 10),
-
             // Title & Location
             Text(widget.spot.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             Text(widget.spot.town, style: TextStyle(fontSize: 16, color: Colors.grey[700])),

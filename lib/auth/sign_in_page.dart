@@ -56,123 +56,120 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Sign In",
-                  style: TextStyle(fontSize: 30),
-                ),
-                const SizedBox(height: 20),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Sign In",
+                style: TextStyle(fontSize: 30),
+              ),
+              const SizedBox(height: 20),
 
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 20),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Email"),
+                    const SizedBox(height: 5),
+                    TextField(
+                      controller: _emailCtrl,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your email',
+                        border: OutlineInputBorder(),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Email"),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: _emailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter your email',
-                          border: OutlineInputBorder(),
-                        ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text("Password"),
+                    const SizedBox(height: 5),
+                    TextField(
+                      controller: _passwordCtrl,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your password',
+                        border: OutlineInputBorder(),
                       ),
-                      const SizedBox(height: 15),
-                      const Text("Password"),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: _passwordCtrl,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter your password',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Center(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _handleSignIn,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              foregroundColor: Colors.white,
-                              side: const BorderSide(
-                                  color: Colors.black, width: 2),
-                            ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Sign In',
-                                    style: TextStyle(fontSize: 20),
-                                  ),
+                    ),
+                    const SizedBox(height: 15),
+                    Center(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _handleSignIn,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(
+                                color: Colors.black, width: 2),
                           ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Sign In',
+                                  style: TextStyle(fontSize: 20),
+                                ),
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              const Text(
+                "Don't have an account yet?",
+                style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RegisterPage(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                    foregroundColor: Colors.black,
+                    side:
+                        const BorderSide(color: Colors.black, width: 1),
+                  ),
+                  child: const Text(
+                    'Register',
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
-
-                const SizedBox(height: 30),
-
-                const Text(
-                  "Don't have an account yet?",
-                  style: TextStyle(fontSize: 20),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterPage(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.black,
-                      side:
-                          const BorderSide(color: Colors.black, width: 1),
-                    ),
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -151,7 +151,10 @@ class ApiService {
 
   Future<List<BookingsData>> getBookigs() async {
     try {
-      final response = await _dio.get<List<dynamic>>('/bookings/list');
+      final currentUser = await UserStorage.currentUser;
+      if (currentUser == null) return [];
+
+      final response = await _dio.get<List<dynamic>>('/bookings/list?sailor_id=${currentUser.id}');
 
       if (response.statusCode == 200 && response.data != null) {
         return response.data!
@@ -165,6 +168,7 @@ class ApiService {
       return [];
     }
   }
+
 
   Future<void> submitBooking(Map<String, dynamic> bookingData) async {
     try {

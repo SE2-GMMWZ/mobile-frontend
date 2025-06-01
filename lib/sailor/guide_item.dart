@@ -12,7 +12,6 @@ class GuideItem extends StatelessWidget {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        leading: Icon(Icons.image, size: 50), // Placeholder for image
         title: Text(guide.title, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(guide.content),
         trailing: ElevatedButton(

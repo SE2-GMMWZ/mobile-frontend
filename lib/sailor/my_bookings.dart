@@ -1,4 +1,6 @@
 import 'package:book_and_dock_mobile/data/bookings_data.dart';
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'booking_item.dart';
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
@@ -22,11 +24,14 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
 
   Future<void> _loadBookings() async {
     final fetched = await ApiService().getBookigs();
-    print('Fetched bookings: ${fetched.length}');
+
+    print('Filtered bookings: ${fetched.length}');
+
     setState(() {
       bookings = fetched;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

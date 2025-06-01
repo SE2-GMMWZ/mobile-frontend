@@ -19,7 +19,6 @@ class BookingItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              leading: Icon(Icons.image, size: 50),
               title: Text(booking.dockName ?? booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(
                 'Booking for ${booking.people} person/s\n'

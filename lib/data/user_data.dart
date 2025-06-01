@@ -33,6 +33,7 @@ class UserProfile {
       'surname': surname,
       'email': email,
       'phone': phone,
+      'id': id,
     };
   }
 }
