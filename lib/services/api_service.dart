@@ -117,10 +117,11 @@ class ApiService {
 
   Future<List<DockingSpotData>> getDockingSpots() async {
     try {
-      final response = await _dio.get<List<dynamic>>('/docking-spots/list');
+      final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list');
 
       if (response.statusCode == 200 && response.data != null) {
-        return response.data!
+        final List<dynamic> dockingspots = response.data!['docking_spots'];
+        return dockingspots
             .map((spot) => DockingSpotData.fromJson(spot as Map<String, dynamic>))
             .toList();
       } else {
@@ -134,17 +135,18 @@ class ApiService {
 
   Future<List<GuidesData>> getGuides() async {
     try {
-      final response = await _dio.get<List<dynamic>>('/guides/list');
+      final response = await _dio.get<Map<String, dynamic>>('/guides/list');
 
       if (response.statusCode == 200 && response.data != null) {
-        return response.data!
+        final List<dynamic> guides = response.data!['guides'];
+        return guides
             .map((guide) => GuidesData.fromJson(guide as Map<String, dynamic>))
             .toList();
       } else {
         return [];
       }
     } catch (e) {
-      print('Get guides error: $e');
+      print('Get docking spots error: $e');
       return [];
     }
   }
@@ -154,21 +156,21 @@ class ApiService {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];
 
-      final response = await _dio.get<List<dynamic>>('/bookings/list?sailor_id=${currentUser.id}');
+      final response = await _dio.get<Map<String, dynamic>>('/bookings/list?sailor_id=${currentUser.id}');
 
       if (response.statusCode == 200 && response.data != null) {
-        return response.data!
-            .map((booking) => BookingsData.fromJson(booking as Map<String, dynamic>))
+        final List<dynamic> bookings = response.data!['bookings'];
+        return bookings
+            .map((guide) => BookingsData.fromJson(guide as Map<String, dynamic>))
             .toList();
       } else {
         return [];
       }
     } catch (e) {
-      print('Get booking error: $e');
+      print('Get docking spots error: $e');
       return [];
     }
   }
-
 
   Future<void> submitBooking(Map<String, dynamic> bookingData) async {
     try {
@@ -197,7 +199,7 @@ class ApiService {
 
   Future<DockingSpotData?> getDockById(String dockId) async {
     try {
-      final response = await _dio.get('/docks/$dockId');
+      final response = await _dio.get('/docking-spots/$dockId');
       if (response.statusCode == 200 && response.data != null) {
         return DockingSpotData.fromJson(response.data);
       }

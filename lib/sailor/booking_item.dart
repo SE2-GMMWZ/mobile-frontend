@@ -3,13 +3,35 @@ import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:flutter/material.dart';
 
-class BookingItem extends StatelessWidget {
+
+class BookingItem extends StatefulWidget {
   final BookingsData booking;
   final VoidCallback? onDeleted;
 
   const BookingItem({required this.booking, this.onDeleted});
 
   @override
+  State<BookingItem> createState() => _BookingItemState();
+}
+
+class _BookingItemState extends State<BookingItem> {
+  DockingSpotData? dock;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDock();
+  }
+
+  Future<void> _loadDock() async {
+    final result = await ApiService().getDockById(widget.booking.dockId);
+    setState(() {
+      dock = result;
+      isLoading = false;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
@@ -19,16 +41,18 @@ class BookingItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text(booking.dockName ?? booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(dock?.name ?? widget.booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(
-                'Booking for ${booking.people} person/s\n'
-                '${DateTime.parse(booking.startDate).toLocal().toString().split(' ')[0]} - '
-                '${DateTime.parse(booking.endDate).toLocal().toString().split(' ')[0]}',
+                'Booking for ${widget.booking.people} person/s\n'
+                '${DateTime.parse(widget.booking.startDate).toLocal().toString().split(' ')[0]} - '
+                '${DateTime.parse(widget.booking.endDate).toLocal().toString().split(' ')[0]}',
               ),
-              trailing: Text(
-                '999 PLN', // replace with actual price if available
-                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-              ),
+              trailing: isLoading
+                ? CircularProgressIndicator()
+                : Text(
+                    '${dock != null ? int.parse(widget.booking.people) * dock!.price_per_night : '?'} PLN',
+                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
             ),
             SizedBox(height: 8),
             Row(
@@ -50,9 +74,9 @@ class BookingItem extends StatelessWidget {
 
                       if (confirm == true) {
                         try {
-                          await ApiService().deleteBooking(booking.bookingId ?? '');
+                          await ApiService().deleteBooking(widget.booking.bookingId ?? '');
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Booking deleted')));
-                          if (onDeleted != null) onDeleted!();
+                          if (widget.onDeleted != null) widget.onDeleted!();
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete booking')));
                         }
