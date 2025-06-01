@@ -56,7 +56,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
             : ListView.builder(
                 itemCount: bookings.length,
                 itemBuilder: (context, index) {
-                  return BookingItem(booking: bookings[index]);
+                  return BookingItem(booking: bookings[index], onDeleted: () async{ await _loadBookings();},);
                 },
               ),
       ),
