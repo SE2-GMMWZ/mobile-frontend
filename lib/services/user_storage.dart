@@ -8,14 +8,7 @@ class UserStorage {
 
   static Future<void> save(UserProfile user) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = jsonEncode({
-      'name': user.name,
-      'surname': user.surname,
-      'email': user.email,
-      'role': user.role,
-      'user_id': user.id,
-      'phone_number': user.phone,
-    });
+    final jsonString = jsonEncode(user.toJson());
     await prefs.setString(_key, jsonString);
   }
 

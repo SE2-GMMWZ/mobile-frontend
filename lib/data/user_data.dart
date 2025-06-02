@@ -21,19 +21,19 @@ class UserProfile {
       surname: json['surname'] ?? '',
       email: json['email'] ?? '',
       role: json['role'] ?? '',
-      phone: json['phone_number'] ?? '',
-      id: json['user_id'] ?? '',
+      phone: json['phone'] ?? '',
+      id: json['id'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'user_id': id,
+      'id': id,
       'role': role,
       'name': name,
       'surname': surname,
       'email': email,
-      'phone_number': phone,
+      'phone': phone,
     };
   }
 
