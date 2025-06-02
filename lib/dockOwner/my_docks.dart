@@ -67,11 +67,16 @@ class _MyDocksPageState extends State<MyDocksPage> {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   final user = await _currentUserFuture;
-                  Navigator.push(
+                  final result = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddDockPage(currentUser: _currentUserFuture,)),
+                    MaterialPageRoute(
+                      builder: (context) => AddDockPage(currentUser: _currentUserFuture),
+                    ),
                   );
-                  _loadDockingSpots();
+
+                  if (result == true) {
+                    _loadDockingSpots(); 
+                  }
                 },
                 icon: Icon(Icons.add),
                 label: Text('Add Dock'),

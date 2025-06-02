@@ -209,7 +209,7 @@ class _AddDockPageState extends State<AddDockPage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Dock added successfully!')),
                             );
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           } catch (e) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
