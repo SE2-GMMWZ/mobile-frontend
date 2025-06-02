@@ -17,12 +17,12 @@ class UserProfile {
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      name: json['name'] as String? ?? '',
-      surname: json['surname'] as String? ?? '',
-      email: json['email'] as String? ?? '',
-      role: json['role'] as String? ?? '',
-      phone: json['phone'] as String? ?? '',
-      id: json['id'] as String? ?? '',
+      name: json['name'] ?? '',
+      surname: json['surname'] ?? '',
+      email: json['email'] ?? '',
+      role: json['role'] ?? '',
+      phone: json['phone_number'] ?? '',
+      id: json['user_id'] ?? '',
     );
   }
 

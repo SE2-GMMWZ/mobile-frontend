@@ -9,21 +9,23 @@ class GuideItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final preview = guide.content.trim().split(' ').take(7).join(' ') + '...';
+
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         title: Text(guide.title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(guide.content),
+        subtitle: Text(preview),
         trailing: ElevatedButton(
           onPressed: () {
             Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GuideDetailsPage(title: guide.title, description: guide.content),
-            ),
-          );
+              context,
+              MaterialPageRoute(
+                builder: (context) => GuideDetailsPage(guide: guide),
+              ),
+            );
           },
-          child: Text('Read more >'),
+          child: Text('Read More >'),
         ),
       ),
     );

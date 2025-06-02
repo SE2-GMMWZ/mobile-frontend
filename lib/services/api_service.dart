@@ -150,6 +150,21 @@ class ApiService {
     }
   }
 
+  Future<UserProfile?> getAuthorById(String authorId) async {
+    try {
+      final response = await _dio.get('/users/$authorId');
+
+      if (response.statusCode == 200 && response.data != null) {
+        final userJson = response.data['user'];
+        return UserProfile.fromJson(userJson);
+      }
+    } catch (e) {
+      print("Failed to get dock: $e");
+    }
+    return null;
+  }
+
+
   Future<List<BookingsData>> getBookigs() async {
     try {
       final currentUser = await UserStorage.currentUser;
@@ -230,36 +245,36 @@ class ApiService {
 
   // REVIEWS
   Future<List<ReviewData>> getReviews() async {
-  try {
-    final response = await _dio.get('/reviews/list');
-    if (response.statusCode == 200) {
-      
-      // If it's already a List, use it directly
-      if (response.data is List) {
-        final List<dynamic> reviewsJson = response.data;
-        return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
-      }
-      
-      // If it's a Map, look for common array keys
-      if (response.data is Map) {
-        final Map<String, dynamic> responseMap = response.data;
+    try {
+      final response = await _dio.get('/reviews/list');
+      if (response.statusCode == 200) {
         
-        // Try common keys in order of likelihood
-        final possibleKeys = ['data', 'reviews', 'items', 'results'];
-        for (String key in possibleKeys) {
-          if (responseMap.containsKey(key) && responseMap[key] is List) {
-            final List<dynamic> reviewsJson = responseMap[key];
-            return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
+        // If it's already a List, use it directly
+        if (response.data is List) {
+          final List<dynamic> reviewsJson = response.data;
+          return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
+        }
+        
+        // If it's a Map, look for common array keys
+        if (response.data is Map) {
+          final Map<String, dynamic> responseMap = response.data;
+          
+          // Try common keys in order of likelihood
+          final possibleKeys = ['data', 'reviews', 'items', 'results'];
+          for (String key in possibleKeys) {
+            if (responseMap.containsKey(key) && responseMap[key] is List) {
+              final List<dynamic> reviewsJson = responseMap[key];
+              return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
+            }
           }
         }
       }
+      return [];
+    } catch (e) {
+      print('Get reviews error: $e');
+      return [];
     }
-    return [];
-  } catch (e) {
-    print('Get reviews error: $e');
-    return [];
   }
-}
 
   
 
