@@ -1,12 +1,12 @@
 import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/dockOwner/my_dock_item.dart';
 import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import '../sailor/notifications.dart';
 import 'add_dock.dart';
-import '../sailor/dock_item.dart';
 
 class MyDocksPage extends StatefulWidget {
 
@@ -19,7 +19,6 @@ class MyDocksPage extends StatefulWidget {
 class _MyDocksPageState extends State<MyDocksPage> {
   late Future<UserProfile?> _currentUserFuture;
   List<DockingSpotData> spots = [];
-  List<DockingSpotData> filteredSpots = [];
   bool isLoading = true;
   String searchQuery = '';
 
@@ -39,28 +38,7 @@ class _MyDocksPageState extends State<MyDocksPage> {
     print('Fetched spots: ${fetched.length}');
     setState(() {
       spots = fetched;
-      filteredSpots = fetched;
       isLoading = false;
-    });
-  }
-
-  void _filterSpots(String query) {
-    if (query.isEmpty) {
-      // Show all if query is empty
-      setState(() {
-        searchQuery = '';
-        filteredSpots = spots;
-      });
-      return;
-    }
-
-    final filtered = spots.where((spot) {
-      return spot.name.toLowerCase().contains(query.toLowerCase());
-    }).toList();
-
-    setState(() {
-      searchQuery = query;
-      filteredSpots = filtered;
     });
   }
   
@@ -86,7 +64,6 @@ class _MyDocksPageState extends State<MyDocksPage> {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   final user = await _currentUserFuture;
-                  print('CURRENT USER: ${user?.id}');
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddDockPage(currentUser: _currentUserFuture,)),
@@ -104,11 +81,11 @@ class _MyDocksPageState extends State<MyDocksPage> {
             Expanded(
               child: isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : filteredSpots.isEmpty
+                  : spots.isEmpty
                       ? Center(child: Text('No matching docking spots.'))
                       : ListView(
-                          children: filteredSpots
-                              .map((spot) => DockItem(spot: spot, currentUser: _currentUserFuture,))
+                          children: spots
+                              .map((spot) => MyDockItem(spot: spot, currentUser: _currentUserFuture,))
                               .toList(),
                         ),
             ),

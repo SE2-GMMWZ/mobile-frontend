@@ -204,8 +204,6 @@ class _AddDockPageState extends State<AddDockPage> {
                             "availability": "available",                      
                           };
 
-                          print(dockingSpotData);
-
                           try {
                             await ApiService().submitDockingSpot(dockingSpotData);
                             if (!context.mounted) return;

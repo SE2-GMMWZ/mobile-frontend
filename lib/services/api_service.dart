@@ -139,12 +139,12 @@ class ApiService {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];
 
-      final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list??owner_id=${currentUser.id}');
+      final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list?owner_id=${currentUser.id}');
 
       if (response.statusCode == 200 && response.data != null) {
-        final List<dynamic> dockingspots = response.data!['docking_spots'];
-        return dockingspots
-            .map((spot) => DockingSpotData.fromJson(spot as Map<String, dynamic>))
+        final List<dynamic> spots = response.data!['docking_spots'];
+        return spots
+            .map((guide) => DockingSpotData.fromJson(guide as Map<String, dynamic>))
             .toList();
       } else {
         return [];
@@ -167,6 +167,21 @@ class ApiService {
       }
     } catch (e) {
       print('Submit docking spot error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateDockingSpot(String dockId, Map<String, dynamic> updatedData) async {
+    try {
+      final response = await _dio.put('/docking-spots/$dockId', data: updatedData);
+
+      if (response.statusCode == 200) {
+        print("Dock updated successfully.");
+      } else {
+        throw Exception("Failed to update dock: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Update dock error: $e");
       rethrow;
     }
   }
