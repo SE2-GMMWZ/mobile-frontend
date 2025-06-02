@@ -24,7 +24,15 @@ class GuidesData {
   });
 
   factory GuidesData.fromJson(Map<String, dynamic> json) {
-    final location = json['location'] ?? {};
+    final location = json['location'];
+    double latitude = 0.0;
+    double longitude = 0.0;
+
+    if (location is Map<String, dynamic>) {
+      latitude = (location['latitude'] as num?)?.toDouble() ?? 0.0;
+      longitude = (location['longitude'] as num?)?.toDouble() ?? 0.0;
+    }
+
     return GuidesData(
       guideId: json['guide_id'] as String?,
       title: json['title'] ?? '',
@@ -33,8 +41,8 @@ class GuidesData {
       publicationDate: json['publication_date'] ?? '',
       images: List<String>.from(json['images'] ?? []),
       links: List<String>.from(json['links'] ?? []),
-      latitude: (location['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (location['longitude'] as num?)?.toDouble() ?? 0.0,
+      latitude: latitude,
+      longitude: longitude,
       isApproved: json['is_approved'] ?? false,
     );
   }
