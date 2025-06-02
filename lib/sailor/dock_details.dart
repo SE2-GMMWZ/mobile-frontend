@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:book_and_dock_mobile/data/user_data.dart';
 import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
 import '../data/docking_spot_data.dart';
 import '../services/api_service.dart';
