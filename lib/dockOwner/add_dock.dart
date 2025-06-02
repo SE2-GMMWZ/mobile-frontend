@@ -203,7 +203,6 @@ class _AddDockPageState extends State<AddDockPage> {
                             "price_per_person": double.tryParse(_pricePersonController.text) ?? 0,
                             "availability": "available",                      
                           };
-
                           try {
                             await ApiService().submitDockingSpot(dockingSpotData);
                             if (!context.mounted) return;
