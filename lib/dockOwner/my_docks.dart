@@ -57,7 +57,7 @@ class _MyDocksPageState extends State<MyDocksPage> {
       drawer: AppDrawer(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: ListView(
+        child: Column(
           children: [
             SizedBox(
               width: double.infinity,

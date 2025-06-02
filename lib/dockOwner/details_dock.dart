@@ -83,68 +83,7 @@ class _DockDetailsPageState extends State<MyDockDetailsPage> {
                     buildDisplayField("Price per night", widget.dock.price_per_night.toString()),
                     buildDisplayField("Price per person", widget.dock.price_per_person.toString()),
                     buildDisplayField("Services", widget.dock.services ?? ''),
-
-                    const Text("Availability"),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: DropdownButtonFormField<String>(
-                        value: _availability,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                        items: const [
-                          DropdownMenuItem(value: 'available', child: Text('Available')),
-                          DropdownMenuItem(value: 'unavailable', child: Text('Unavailable')),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _availability = value;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final updatedData = {
-                            "name": widget.dock.name,
-                            "location": {
-                              "town": widget.dock.town ?? '',
-                              "latitude": widget.dock.latitude,
-                              "longitude": widget.dock.longitude,
-                            },
-                            "price_per_night": widget.dock.price_per_night,
-                            "price_per_person": widget.dock.price_per_person,
-                            "services": widget.dock.services ?? '',
-                            "availability": _availability,
-                          };
-
-                          try {
-                            await ApiService().updateDockingSpot(widget.dock.dock_id!, updatedData);
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Dock updated successfully")),
-                            );
-                            Navigator.pop(context);
-                          } catch (_) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Failed to update dock")),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text("Save Changes"),
-                      ),
-                    ),
+                    buildDisplayField("Availability", _availability ?? 'available'),                  
                   ],
                 ),
               ),
