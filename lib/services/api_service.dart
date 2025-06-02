@@ -249,6 +249,27 @@ class ApiService {
     }
   }
 
+  Future<List<BookingsData>> getMyDeckBookings() async {
+    try {
+      final currentUser = await UserStorage.currentUser;
+      if (currentUser == null) return [];
+
+      final response = await _dio.get<Map<String, dynamic>>('/bookings/list?sailor_id=${currentUser.id}');
+
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic> bookings = response.data!['bookings'];
+        return bookings
+            .map((guide) => BookingsData.fromJson(guide as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get docking spots error: $e');
+      return [];
+    }
+  }
+
   Future<void> submitBooking(Map<String, dynamic> bookingData) async {
     try {
       final response = await _dio.post(
