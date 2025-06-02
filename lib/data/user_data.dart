@@ -4,7 +4,7 @@ class UserProfile {
   final String email;
   final String role;
   final String phone;
-  final String? id;
+  final String id;
 
   UserProfile({
     required this.name,
@@ -12,7 +12,7 @@ class UserProfile {
     required this.email,
     required this.role,
     required this.phone,
-    this.id
+    required this.id
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -22,7 +22,7 @@ class UserProfile {
       email: json['email'] ?? '',
       role: json['role'] ?? '',
       phone: json['phone_number'] ?? '',
-      id: json['user_id'] ?? '',
+      id: json['user_id'] ?? json['id'] ?? '',
     );
   }
 
