@@ -1,6 +1,7 @@
 import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:book_and_dock_mobile/data/user_data.dart';
 import 'package:book_and_dock_mobile/dockOwner/my_dock_item.dart';
+import 'package:book_and_dock_mobile/profile/my_profile.dart';
 import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,9 @@ class _MyDocksPageState extends State<MyDocksPage> {
           IconButton(icon: Icon(Icons.notifications), onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
           }),
-          IconButton(icon: Icon(Icons.account_circle), onPressed: () {}),
+          IconButton(icon: Icon(Icons.account_circle), onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfilePage()));
+          }),
         ],
       ),
       drawer: AppDrawer(),

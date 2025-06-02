@@ -1,4 +1,6 @@
 import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
+import 'package:book_and_dock_mobile/profile/my_profile.dart';
+import 'package:book_and_dock_mobile/sailor/notifications.dart';
 import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -46,11 +48,12 @@ class _EditDockPageState extends State<EditDockPage> {
       appBar: AppBar(
         title: Text('Change Details'),
         actions: [
-          IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
-          IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {}
-          ),
+          IconButton(icon: Icon(Icons.notifications), onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
+          }),
+          IconButton(icon: Icon(Icons.account_circle), onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfilePage()));
+          }),
         ],
       ),
       body: SafeArea(
