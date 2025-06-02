@@ -178,9 +178,12 @@ class _EditDockPageState extends State<EditDockPage> {
                               "latitude": widget.dock.latitude,
                               "longitude": widget.dock.longitude,
                             },
+                            "description": widget.dock.description ?? '', 
+                            "owner_id": widget.dock.owner_id,
+                            "services": _servicesController.text.trim(),
+                            "services_pricing": widget.dock.services_pricing ?? 0,
                             "price_per_night": double.tryParse(_priceNightController.text) ?? 0,
                             "price_per_person": double.tryParse(_pricePersonController.text) ?? 0,
-                            "services": _servicesController.text.trim(),
                             "availability": _availability,
                           };
 

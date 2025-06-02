@@ -7,8 +7,14 @@ import '../data/docking_spot_data.dart';
 class MyDockItem extends StatelessWidget {
   final DockingSpotData spot;
   final Future<UserProfile?> currentUser;
+  final VoidCallback? onUpdated;
 
-  const MyDockItem({super.key, required this.spot, required this.currentUser});
+  const MyDockItem({
+    super.key,
+    required this.spot,
+    required this.currentUser,
+    this.onUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +31,7 @@ class MyDockItem extends StatelessWidget {
                 style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 5),
             Row(
               children: [
                 Expanded(
@@ -39,39 +45,43 @@ class MyDockItem extends StatelessWidget {
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black), // Black border
-                      backgroundColor: Colors.grey[300], // Light grey background
+                      side: BorderSide(color: Colors.black),
+                      backgroundColor: Colors.grey[300],
                     ),
                     child: Text('View Details', style: TextStyle(color: Colors.black)),
                   ),
                 ),
               ],
             ),
+            SizedBox(height: 3),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {},
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black), // Black border
-                      backgroundColor: Colors.grey[300], // Light grey background
+                      side: BorderSide(color: Colors.black),
+                      backgroundColor: Colors.grey[300],
                     ),
                     child: Text('Remove Dock', style: TextStyle(color: Colors.black)),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 3),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EditDockPage(dock: spot,)));
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EditDockPage(dock: spot)),
+                      );
+                      if (onUpdated != null) onUpdated!();
                     },
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black), 
+                      side: BorderSide(color: Colors.black),
                       backgroundColor: Colors.grey[300],
                     ),
                     child: Text('Change Details >', style: TextStyle(color: Colors.black)),

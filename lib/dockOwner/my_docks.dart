@@ -68,6 +68,7 @@ class _MyDocksPageState extends State<MyDocksPage> {
                     context,
                     MaterialPageRoute(builder: (context) => AddDockPage(currentUser: _currentUserFuture,)),
                   );
+                  _loadDockingSpots();
                 },
                 icon: Icon(Icons.add),
                 label: Text('Add Dock'),
@@ -85,7 +86,7 @@ class _MyDocksPageState extends State<MyDocksPage> {
                       ? Center(child: Text('No matching docking spots.'))
                       : ListView(
                           children: spots
-                              .map((spot) => MyDockItem(spot: spot, currentUser: _currentUserFuture,))
+                              .map((spot) => MyDockItem(spot: spot, currentUser: _currentUserFuture, onUpdated: _loadDockingSpots,))
                               .toList(),
                         ),
             ),
