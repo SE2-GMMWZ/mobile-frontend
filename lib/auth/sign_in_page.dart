@@ -1,3 +1,5 @@
+import 'package:book_and_dock_mobile/dockOwner/my_docks.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 import '../sailor/my_home.dart';
@@ -33,11 +35,26 @@ class _SignInPageState extends State<SignInPage> {
 
     if (success) {
       if (await api.getUser()) {
+        final user = await UserStorage.currentUser;
         setState(() => _isLoading = false);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomePage()),
-        );
+
+        if (user == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User data not found')),
+          );
+          return;
+        }
+
+        switch (user.role) {
+          case 'sailor':
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+            break;
+          case 'dock_owner':
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyDocksPage()));
+            break;
+          default:
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+        }
       } else {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
