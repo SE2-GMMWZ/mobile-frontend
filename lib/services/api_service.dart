@@ -9,7 +9,6 @@ import '../data/docking_spot_data.dart';
 import '../data/guides_data.dart';
 import '../data/bookings_data.dart';
 import '../data/notifications_data.dart';
-import '../data/comments_data.dart';
 import '../data/reviews_data.dart';
  
 class ApiService {
@@ -228,38 +227,6 @@ class ApiService {
     }
   }
 
-  // COMMENTS
-  Future<List<CommentData>> getComments({int page = 1, int pageSize = 20}) async {
-    try {
-      final response = await _dio.get<List<dynamic>>(
-        '/comments/list',
-        queryParameters: {'page': page, 'pageSize': pageSize},
-      );
-      if (response.statusCode == 200 && response.data != null) {
-        return response.data!
-            .map((c) => CommentData.fromJson(c as Map<String, dynamic>))
-            .toList();
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print('Get comments error: $e');
-      return [];
-    }
-  }
-
-  Future<CommentData?> getCommentById(String id) async {
-    try {
-      final response = await _dio.get<Map<String, dynamic>>('/comments/$id');
-      if (response.statusCode == 200 && response.data != null) {
-        return CommentData.fromJson(response.data!);
-      }
-      return null;
-    } catch (e) {
-      print('Get comment by id error: $e');
-      return null;
-    }
-  }
 
   // REVIEWS
   Future<List<ReviewData>> getReviews() async {

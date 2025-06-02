@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_and_dock_mobile/dialogs/booking_complete_dialog.dart';
 import '../data/docking_spot_data.dart';
 import '../services/api_service.dart';
-import '../data/comments_data.dart';
 import '../data/reviews_data.dart';
 
 const stripeSecretKey = 'sk_test_51RQ47u2fvPZJA4JMDXOynqvaYiyryioapNmI1BKD4FRJN6nllgd6a4WZrsFmrevqSbAEHC8TwomV7GO2jua5AF2m00igKzTzo0'; // To jest nielegalne, tak sie nie robi NIGDY (oprocz dzisiaj) 
@@ -55,8 +54,8 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   DateTime? toDate;
   int selectedPeople = 1;
 
-  List<CommentData> _comments = [];
-  bool _loadingComments = true;
+  List<ReviewData> _reviews = [];
+  bool _loadingreviews = true;
 
   TextEditingController _reviewController = TextEditingController();
   int _selectedRating = 0;
@@ -82,7 +81,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
  @override
   void initState() {
     super.initState();
-    _fetchComments();
+    _fetchReviews();
   }
 
   @override
@@ -116,14 +115,14 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   }
 
 
-  Future<void> _fetchComments() async {
+  Future<void> _fetchReviews() async {
     setState(() {
-      _loadingComments = true;
+      _loadingreviews = true;
     });
-    final comments = await ApiService().getComments();
+    final reviews = await ApiService().getReviews();
     setState(() {
-      _comments = comments.where((c) => c.guideId == widget.spot.dock_id).toList();
-      _loadingComments = false;
+      _reviews = reviews;
+      _loadingreviews = false;
     });
   }
 
@@ -147,7 +146,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
       reviewerId: reviewerId,
       comment: _reviewController.text,
       dateOfReview: DateTime.now().toIso8601String(),
-      rating: _selectedRating.toString(),
+      rating: _selectedRating.toString(), 
     );
 
     final success = await ApiService().createReview(review);
@@ -157,6 +156,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
       setState(() {
         _selectedRating = 0;
       });
+       _fetchReviews();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit review')));
     }
@@ -210,15 +210,15 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
             ),
             SizedBox(height: 20),
 
-            // Comments
-            Text("Comments:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            _loadingComments
+            // reviews
+            Text("reviews:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            _loadingreviews
                 ? Center(child: CircularProgressIndicator())
-                : (_comments.isEmpty
-                    ? Text("No comments yet.")
+                : (_reviews.isEmpty
+                    ? Text("No reviews yet.")
                     : Column(
-                        children: _comments
-                            .map((c) => _commentItem(c.userId, c.content))
+                        children: _reviews
+                            .map((r) => _reviewItem(r))
                             .toList(),
                       )),
             SizedBox(height: 20),
@@ -343,17 +343,43 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     );
   }
 
-  Widget _commentItem(String user, String comment) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(fontSize: 14, color: Colors.black),
-          children: [
-            TextSpan(text: "$user: ", style: TextStyle(fontWeight: FontWeight.bold)),
-            TextSpan(text: comment),
-          ],
-        ),
+
+  Widget _reviewItem(ReviewData review) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(8.0),
+        color: Colors.grey[50],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                "User ${review.reviewerId}",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              Spacer(),
+              Row(
+                children: List.generate(5, (index) => Icon(
+                  index < int.parse(review.rating) ? Icons.star : Icons.star_border,
+                  color: Colors.amber,
+                  size: 16,
+                )),
+              ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Text(
+            DateTime.parse(review.dateOfReview).toLocal().toString().split('.')[0],
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          ),
+          SizedBox(height: 8),
+          Text(review.comment, style: TextStyle(fontSize: 14)),
+        ],
       ),
     );
   }
