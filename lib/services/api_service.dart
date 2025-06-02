@@ -230,20 +230,38 @@ class ApiService {
 
   // REVIEWS
   Future<List<ReviewData>> getReviews() async {
-    try {
-      final response = await _dio.get<List<dynamic>>('/reviews/list');
-      if (response.statusCode == 200 && response.data != null) {
-        return response.data!
-            .map((r) => ReviewData.fromJson(r as Map<String, dynamic>))
-            .toList();
-      } else {
-        return [];
+  try {
+    final response = await _dio.get('/reviews/list');
+    if (response.statusCode == 200) {
+      
+      // If it's already a List, use it directly
+      if (response.data is List) {
+        final List<dynamic> reviewsJson = response.data;
+        return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
       }
-    } catch (e) {
-      print('Get reviews error: $e');
-      return [];
+      
+      // If it's a Map, look for common array keys
+      if (response.data is Map) {
+        final Map<String, dynamic> responseMap = response.data;
+        
+        // Try common keys in order of likelihood
+        final possibleKeys = ['data', 'reviews', 'items', 'results'];
+        for (String key in possibleKeys) {
+          if (responseMap.containsKey(key) && responseMap[key] is List) {
+            final List<dynamic> reviewsJson = responseMap[key];
+            return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
+          }
+        }
+      }
     }
+    return [];
+  } catch (e) {
+    print('Get reviews error: $e');
+    return [];
   }
+}
+
+  
 
   Future<ReviewData?> getReviewById(String id) async {
     try {
@@ -260,20 +278,36 @@ class ApiService {
 
   
   Future<bool> createReview(ReviewData review) async {
-    /* 
-    try {
-      final response = await _dio.post(
-        '/reviews',
-        data: review.toJson(),
-      );
-      return response.statusCode == 200 || response.statusCode == 201;
-    } catch (e) {
-      print('Create review error: $e');
+  try {
+    // Convert the review to JSON, excluding the review_id if it's empty
+    final reviewJson = review.toJson();
+    if (reviewJson['review_id'] == '') {
+      reviewJson.remove('review_id');
+    }
+    
+    print('Sending review data: ${jsonEncode(reviewJson)}');
+    
+    final response = await _dio.post(
+      '/reviews',
+      data: reviewJson,
+    );
+    
+    if (response.statusCode == 201) {
+      print('Review created successfully');
+      return true;
+    } else {
+      print('Create review error: Status ${response.statusCode}');
+      print('Response: ${response.data}');
       return false;
     }
-    */
-    return true;
+  } catch (e) {
+    print('Create review error: $e');
+    if (e is DioException) {
+      print('DioException details: ${e.response?.data}');
+    }
+    return false;
   }
+}
   
 }
 

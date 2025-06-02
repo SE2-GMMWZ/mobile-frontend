@@ -116,15 +116,28 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
 
 
   Future<void> _fetchReviews() async {
-    setState(() {
-      _loadingreviews = true;
-    });
+  setState(() {
+    _loadingreviews = true;
+  });
+  
+  try {
     final reviews = await ApiService().getReviews();
     setState(() {
       _reviews = reviews;
       _loadingreviews = false;
     });
+  } catch (e) {
+    print('Fetch reviews error: $e');
+    setState(() {
+      _reviews = [];
+      _loadingreviews = false;
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to load reviews'))
+    );
   }
+}
 
   double _calculateTotalPrice() {
     if (fromDate == null || toDate == null) return widget.spot.price_per_night;
@@ -133,34 +146,70 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   }
 
 
-  Future<void> _submitReview() async {
-    final prefs = await SharedPreferences.getInstance();
-    final reviewerId = prefs.getString('sailor_id') ?? '';
-    if (reviewerId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not logged in')));
-      return;
-    }
+ Future<void> _submitReview() async {
+  // Validate input
+  if (_selectedRating == 0) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please select a rating'))
+    );
+    return;
+  }
+  
+  if (_reviewController.text.trim().isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please write a comment'))
+    );
+    return;
+  }
 
+  // Get current user
+  final user = await UserStorage.currentUser;
+  
+  if (user == null || user.id == null || user.id!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('User not logged in'))
+    );
+    return;
+  }
+
+  try {
     final review = ReviewData(
-      reviewId: '', // Let backend generate or use a UUID if needed
-      reviewerId: reviewerId,
-      comment: _reviewController.text,
-      dateOfReview: DateTime.now().toIso8601String(),
-      rating: _selectedRating.toString(), 
+      reviewId: '', // Let backend generate this
+      reviewerId: user.id!,
+      comment: _reviewController.text.trim(),
+      dateOfReview: DateTime.now().toUtc().toIso8601String(),
+      rating: _selectedRating,
     );
 
+    print('Submitting review: ${review.toJson()}');
+
     final success = await ApiService().createReview(review);
+    
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Review submitted!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Review submitted successfully!'))
+      );
+      
+      // Clear the form
       _reviewController.clear();
       setState(() {
         _selectedRating = 0;
       });
-       _fetchReviews();
+      
+      // Refresh reviews
+      await _fetchReviews();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit review')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to submit review. Please try again.'))
+      );
     }
+  } catch (e) {
+    print('Submit review error: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error submitting review: $e'))
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -348,6 +397,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8.0),
       padding: EdgeInsets.all(12.0),
+      width: double.infinity,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[300]!),
         borderRadius: BorderRadius.circular(8.0),
@@ -358,14 +408,18 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
         children: [
           Row(
             children: [
-              Text(
+              Expanded( // Wrap the text in Expanded to prevent overflow
+              child: Text(
                 "User ${review.reviewerId}",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                overflow: TextOverflow.ellipsis,
+              ),
               ),
               Spacer(),
+              //SizedBox(width: 8), // Add some spacing
               Row(
                 children: List.generate(5, (index) => Icon(
-                  index < int.parse(review.rating) ? Icons.star : Icons.star_border,
+                  index < review.rating ? Icons.star : Icons.star_border,
                   color: Colors.amber,
                   size: 16,
                 )),
@@ -378,7 +432,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
             style: TextStyle(color: Colors.grey[600], fontSize: 12),
           ),
           SizedBox(height: 8),
-          Text(review.comment, style: TextStyle(fontSize: 14)),
+          Text(review.comment, style: TextStyle(fontSize: 14), softWrap: true, ),// Ensure text wraps properly),
         ],
       ),
     );
