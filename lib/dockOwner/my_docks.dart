@@ -84,10 +84,12 @@ class _MyDocksPageState extends State<MyDocksPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async {
+                  final user = await _currentUserFuture;
+                  print('CURRENT USER: ${user?.id}');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddDockPage()),
+                    MaterialPageRoute(builder: (context) => AddDockPage(currentUser: _currentUserFuture,)),
                   );
                 },
                 icon: Icon(Icons.add),

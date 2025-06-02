@@ -44,6 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
       role: _selectedType,
+      id: ""
     );
 
     final success = await ApiService().register(newUser, _passwordController.text.trim());

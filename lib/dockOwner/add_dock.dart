@@ -1,13 +1,42 @@
+import 'dart:convert';
+
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/services/api_service.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 
-class AddDockPage extends StatefulWidget {
-  const AddDockPage({super.key});
+class AddDockPage extends StatefulWidget 
+{
+  final Future<UserProfile?> currentUser;
+  const AddDockPage({super.key, required this.currentUser});
 
   @override
   State<AddDockPage> createState() => _AddDockPageState();
 }
 
 class _AddDockPageState extends State<AddDockPage> {
+  final _nameController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _priceNightController = TextEditingController();
+  final _pricePersonController = TextEditingController();
+  final _slotsController = TextEditingController();
+  final _servicesController = TextEditingController();
+  final _servicesPriceController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _locationController.dispose();
+    _descriptionController.dispose();
+    _priceNightController.dispose();
+    _pricePersonController.dispose();
+    _slotsController.dispose();
+    _servicesController.dispose();
+    _servicesPriceController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,10 +44,7 @@ class _AddDockPageState extends State<AddDockPage> {
         title: Text('Add Dock'),
         actions: [
           IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
-          IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {}
-          ),
+          IconButton(icon: Icon(Icons.account_circle), onPressed: () {}),
         ],
       ),
       body: SafeArea(
@@ -27,45 +53,6 @@ class _AddDockPageState extends State<AddDockPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 80,
-                    child: Icon(
-                      Icons.image,
-                      size: 80,
-                      color: Colors.grey,
-                    ),
-                  ),
-
-                  SizedBox(width: 10,),
-
-                  Column(
-                    children: [
-                      const Text("Upload a dock picture", style: TextStyle(fontSize: 16),),
-
-                      TextButton(
-                        onPressed: (){},
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.add_box_rounded,
-                              size: 20,
-                              color: Colors.black,
-                            ),
-
-                            const Text("Add an image", style: TextStyle(fontSize: 16, color: Colors.black),),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-
-                ],
-              ),
-              
-
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20),
                 padding: const EdgeInsets.all(20),
@@ -88,7 +75,8 @@ class _AddDockPageState extends State<AddDockPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        decoration: InputDecoration(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
                           hintText: 'Dock',
                           border: OutlineInputBorder(),
                         ),
@@ -100,9 +88,25 @@ class _AddDockPageState extends State<AddDockPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
+                        controller: _locationController,
+                        decoration: const InputDecoration(
                           hintText: 'Mazury',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    const Text("Description"),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: TextField(
+                        controller: _descriptionController,
+                        minLines: 1,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter a short description of the dock...',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -113,8 +117,8 @@ class _AddDockPageState extends State<AddDockPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
+                        controller: _priceNightController,
+                        decoration: const InputDecoration(
                           hintText: 'in PLN',
                           border: OutlineInputBorder(),
                         ),
@@ -126,8 +130,8 @@ class _AddDockPageState extends State<AddDockPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
+                        controller: _pricePersonController,
+                        decoration: const InputDecoration(
                           hintText: 'in PLN',
                           border: OutlineInputBorder(),
                         ),
@@ -139,8 +143,8 @@ class _AddDockPageState extends State<AddDockPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
+                        controller: _slotsController,
+                        decoration: const InputDecoration(
                           hintText: '20',
                           border: OutlineInputBorder(),
                         ),
@@ -152,9 +156,22 @@ class _AddDockPageState extends State<AddDockPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: '20',
+                        controller: _servicesController,
+                        decoration: const InputDecoration(
+                          hintText: 'water, electricity',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    const Text("Price for services"),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: TextField(
+                        controller: _servicesPriceController,
+                        decoration: const InputDecoration(
+                          hintText: '10',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -163,9 +180,46 @@ class _AddDockPageState extends State<AddDockPage> {
 
                     SizedBox(
                       width: double.infinity,
-                      
                       child: ElevatedButton(
-                        onPressed: (){}, 
+                        onPressed: () async {
+                          final user = await UserStorage.currentUser;
+                          if (user == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('You must be logged in')));
+                            return;
+                          }
+
+                          final dockingSpotData = {
+                            "name": _nameController.text.trim(),
+                            "location": {
+                              "town": _locationController.text.trim(),
+                              "latitude": 0.0,
+                              "longitude": 0.0,
+                            },                       
+                            "description": _descriptionController.text.trim(),
+                            "owner_id": user.id ?? "",                        
+                            "services": _servicesController.text.trim(),
+                            "services_pricing": double.tryParse(_servicesPriceController.text) ?? 0,
+                            "price_per_night": double.tryParse(_priceNightController.text) ?? 0,
+                            "price_per_person": double.tryParse(_pricePersonController.text) ?? 0,
+                            "availability": "available",                      
+                          };
+
+                          print(dockingSpotData);
+
+                          try {
+                            await ApiService().submitDockingSpot(dockingSpotData);
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Dock added successfully!')),
+                            );
+                            Navigator.pop(context);
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to add dock')),
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
@@ -173,16 +227,13 @@ class _AddDockPageState extends State<AddDockPage> {
                         child: const Text("Add Dock"),
                       ),
                     ),
-                    
-                    
                   ],
                 ),
-              ),    
+              ),
             ],
           ),
         ),
       ),
-
     );
   }
 }

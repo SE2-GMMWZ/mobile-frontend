@@ -102,6 +102,8 @@ class ApiService {
       if (response.statusCode == 200 && response.data != null) {
         final userJson = response.data!['user'];
         if (userJson is Map<String, dynamic>) {
+          print("USER JSON: ");
+          print(userJson);
           final user = UserProfile.fromJson(userJson);
           await UserStorage.save(user);
           return true;
@@ -136,7 +138,7 @@ class ApiService {
     try {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];
-      
+
       final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list??owner_id=${currentUser.id}');
 
       if (response.statusCode == 200 && response.data != null) {
@@ -150,6 +152,22 @@ class ApiService {
     } catch (e) {
       print('Get docking spots error: $e');
       return [];
+    }
+  }
+
+  Future<void> submitDockingSpot(Map<String, dynamic> dockingSpotData) async {
+    try {
+      final response = await _dio.post(
+        '/docking-spots',
+        data: dockingSpotData,
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Failed to submit docking spot');
+      }
+    } catch (e) {
+      print('Submit docking spot error: $e');
+      rethrow;
     }
   }
 
@@ -186,7 +204,7 @@ class ApiService {
   }
 
 
-  Future<List<BookingsData>> getBookigs() async {
+  Future<List<BookingsData>> getBookings() async {
     try {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];

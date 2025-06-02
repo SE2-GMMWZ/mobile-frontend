@@ -22,6 +22,9 @@ class UserStorage {
     final jsonString = prefs.getString(_key);
     if (jsonString == null) return null;
     final Map<String, dynamic> data = jsonDecode(jsonString);
+    print(data);
+    print(data.entries);
+    print(data.values);
     return UserProfile.fromJson(data);
   }
 }
