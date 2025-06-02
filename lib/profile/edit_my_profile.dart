@@ -25,7 +25,16 @@ class _EditMyProfilePageState extends State<EditMyProfilePage> {
   void initState() {
     super.initState();
     _currentUserFuture = UserStorage.currentUser;
+    _currentUserFuture.then((user) {
+      if (user != null) {
+        setState(() {
+          _currentUser = user;
+          _populateFields(user);
+        });
+      }
+    });
   }
+
 
   @override
   void dispose() {
@@ -101,42 +110,12 @@ class _EditMyProfilePageState extends State<EditMyProfilePage> {
               );
             }
             final currentUser = snapshot.data!;
-            _populateFields(currentUser);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        width: 80,
-                        child: Icon(
-                          Icons.image,
-                          size: 80,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        children: [
-                          const Text('Upload a profile picture', style: TextStyle(fontSize: 16)),
-                          TextButton(
-                            onPressed: () {/* TODO: pick image */},
-                            child: Row(
-                              children: const [
-                                Icon(Icons.add_box_rounded, size: 20, color: Colors.black),
-                                SizedBox(width: 5),
-                                Text('Add an image', style: TextStyle(fontSize: 16, color: Colors.black)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 20),
                     padding: const EdgeInsets.all(20),

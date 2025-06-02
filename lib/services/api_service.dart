@@ -132,6 +132,27 @@ class ApiService {
     }
   }
 
+  Future<List<DockingSpotData>> getOwnerDockingSpots() async {
+    try {
+      final currentUser = await UserStorage.currentUser;
+      if (currentUser == null) return [];
+      
+      final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list??owner_id=${currentUser.id}');
+
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic> dockingspots = response.data!['docking_spots'];
+        return dockingspots
+            .map((spot) => DockingSpotData.fromJson(spot as Map<String, dynamic>))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Get docking spots error: $e');
+      return [];
+    }
+  }
+
   Future<List<GuidesData>> getGuides() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>('/guides/list');

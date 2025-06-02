@@ -13,8 +13,8 @@ class UserStorage {
       'surname': user.surname,
       'email': user.email,
       'role': user.role,
-      'id': user.id,
-      'phone': user.phone,
+      'user_id': user.id,
+      'phone_number': user.phone,
     });
     await prefs.setString(_key, jsonString);
   }

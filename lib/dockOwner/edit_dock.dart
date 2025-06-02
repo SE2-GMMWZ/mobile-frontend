@@ -2,20 +2,13 @@ import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
 import 'package:flutter/material.dart';
 
 class EditDockPage extends StatefulWidget {
-  const EditDockPage({super.key});
+  final DockingSpotData dock;
+
+  const EditDockPage({super.key, required this.dock});
 
   @override
   State<EditDockPage> createState() => _EditDockPageState();
 }
-
-final dock = DockingSpotData(
-  name: "Dock 1", 
-  location: "Niegocin Lake", 
-  pricePerNight: 200, 
-  pricePerPerson: 20, 
-  numberOfSlots: 15, 
-  services: "showers, toilets, restaurants",
-);
 
 class _EditDockPageState extends State<EditDockPage> {
   @override
@@ -99,7 +92,7 @@ class _EditDockPageState extends State<EditDockPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: dock.name,
+                          hintText: widget.dock.name,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -112,7 +105,7 @@ class _EditDockPageState extends State<EditDockPage> {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: dock.location,
+                          hintText: widget.dock.latitude,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -125,7 +118,7 @@ class _EditDockPageState extends State<EditDockPage> {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: dock.pricePerNight.toString(),
+                          hintText: widget.dock.price_per_night.toString(),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -138,20 +131,7 @@ class _EditDockPageState extends State<EditDockPage> {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText:  dock.pricePerPerson.toString(),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    const Text("Number of available slots"),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: dock.numberOfSlots.toString(),
+                          hintText:  widget.dock.price_per_person.toString(),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -164,7 +144,7 @@ class _EditDockPageState extends State<EditDockPage> {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: dock.services.toString(),
+                          hintText: widget.dock.services.toString(),
                           border: OutlineInputBorder(),
                         ),
                       ),

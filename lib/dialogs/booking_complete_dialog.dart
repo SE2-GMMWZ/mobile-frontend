@@ -10,11 +10,11 @@ void showBookingCompleteDialog(BuildContext context) {
       content: Text("[Booking summary]"),
       actions: [
         ElevatedButton(onPressed: () {
-  Navigator.of(context).pop(); // Close the dialog first
-  Navigator.of(context).push(
-    MaterialPageRoute(builder: (context) => MyBookingsPage()), // <-- class name here
-  );
-}, child: Text("Manage your bookings")),
+          Navigator.of(context).pop(); 
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => MyBookingsPage()),
+          );
+        }, child: Text("Manage your bookings")),
       ],
     ),
   );

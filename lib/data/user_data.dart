@@ -28,11 +28,13 @@ class UserProfile {
 
   Map<String, dynamic> toJson() {
     return {
+      'user_id': id,
       'role': role,
       'name': name,
       'surname': surname,
       'email': email,
-      'phone': phone,
+      'phone_number': phone,
     };
   }
+
 }

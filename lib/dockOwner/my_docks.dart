@@ -1,10 +1,15 @@
+import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/services/api_service.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import '../sailor/notifications.dart';
 import 'add_dock.dart';
-import 'edit_dock.dart';
+import '../sailor/dock_item.dart';
 
 class MyDocksPage extends StatefulWidget {
+
   const MyDocksPage({super.key});
 
   @override
@@ -12,6 +17,53 @@ class MyDocksPage extends StatefulWidget {
 }
 
 class _MyDocksPageState extends State<MyDocksPage> {
+  late Future<UserProfile?> _currentUserFuture;
+  List<DockingSpotData> spots = [];
+  List<DockingSpotData> filteredSpots = [];
+  bool isLoading = true;
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+    _loadDockingSpots();
+  }
+
+  void _loadUser() {
+    _currentUserFuture = UserStorage.currentUser;
+  }
+
+  Future<void> _loadDockingSpots() async {
+    final fetched = await ApiService().getOwnerDockingSpots();
+    print('Fetched spots: ${fetched.length}');
+    setState(() {
+      spots = fetched;
+      filteredSpots = fetched;
+      isLoading = false;
+    });
+  }
+
+  void _filterSpots(String query) {
+    if (query.isEmpty) {
+      // Show all if query is empty
+      setState(() {
+        searchQuery = '';
+        filteredSpots = spots;
+      });
+      return;
+    }
+
+    final filtered = spots.where((spot) {
+      return spot.name.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    setState(() {
+      searchQuery = query;
+      filteredSpots = filtered;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,67 +99,20 @@ class _MyDocksPageState extends State<MyDocksPage> {
               ),
             ),
             SizedBox(height: 16),
-            _dockItem('Dock 1', 'Real Address 12', '30/11/2024 - 30/11/2024'),
-            _dockItem('Docky', 'Bueno Street', '30/11/2024 - 01/11/2024'),
-            _dockItem('I’m Not', 'That Creative', '30/11/2024 - 01/11/2024'),
+            Expanded(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : filteredSpots.isEmpty
+                      ? Center(child: Text('No matching docking spots.'))
+                      : ListView(
+                          children: filteredSpots
+                              .map((spot) => DockItem(spot: spot, currentUser: _currentUserFuture,))
+                              .toList(),
+                        ),
+            ),
           ],
         ),
         
-      ),
-    );
-  }
-
-  Widget _dockItem(String name, String location, String date) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              leading: Icon(Icons.image, size: 50),
-              title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('$location\n$date'),
-              trailing: Text('999 PLN', 
-                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black), // Black border
-                      backgroundColor: Colors.grey[300], // Light grey background
-                    ),
-                    child: Text('Remove Dock', style: TextStyle(color: Colors.black)),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EditDockPage()));
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black), // Black border
-                      backgroundColor: Colors.grey[300], // Light grey background
-                    ),
-                    child: Text('Change Details >', style: TextStyle(color: Colors.black)),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
