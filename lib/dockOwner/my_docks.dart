@@ -86,7 +86,12 @@ class _MyDocksPageState extends State<MyDocksPage> {
                       ? Center(child: Text('No matching docking spots.'))
                       : ListView(
                           children: spots
-                              .map((spot) => MyDockItem(spot: spot, currentUser: _currentUserFuture, onUpdated: _loadDockingSpots,))
+                              .map((spot) => MyDockItem(
+                                spot: spot,
+                                currentUser: _currentUserFuture,
+                                onUpdated: _loadDockingSpots,
+                                onDeleted: _loadDockingSpots,
+                              ))
                               .toList(),
                         ),
             ),

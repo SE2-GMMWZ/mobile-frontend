@@ -186,6 +186,15 @@ class ApiService {
     }
   }
 
+  Future<void> deleteDock(String dockId) async {
+    try {
+      await _dio.delete('/docking-spots/$dockId');
+    } catch (e) {
+      print('Delete dock error: $e');
+      rethrow;
+    }
+  }
+
   Future<List<GuidesData>> getGuides() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>('/guides/list');
