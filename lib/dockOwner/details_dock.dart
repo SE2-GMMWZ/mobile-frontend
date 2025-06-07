@@ -20,6 +20,11 @@ class _DockDetailsPageState extends State<MyDockDetailsPage> {
   void initState() {
     super.initState();
     _availability = widget.dock.availability ?? "available";
+
+     print("=== Dock Location Debug ===");
+  print("Town: ${widget.dock.town}");
+  print("Latitude: ${widget.dock.latitude}");
+  print("Longitude: ${widget.dock.longitude}");
   }
 
   Widget buildDisplayField(String label, String value) {

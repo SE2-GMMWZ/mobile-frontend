@@ -120,7 +120,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   });
   
   try {
-    final reviews = await ApiService().getReviews();
+    final reviews = await ApiService().getReviews(widget.spot.dock_id!);
     setState(() {
       _reviews = reviews;
       _loadingreviews = false;
@@ -372,6 +372,16 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
 
                       print(jsonEncode(bookingData));
                       await ApiService().submitBooking(bookingData);
+
+                      final notificationData = {
+                        "message": "Your stay in ${widget.spot.name} will start tomorrow",
+                        "user_id": widget.spot.owner_id,
+                        "timestamp": DateTime.now().toUtc().toIso8601String(),
+                        //"timestamp": fromDate!.toUtc().subtract(Duration(days: 1)).toIso8601String(),
+                      };
+
+                      await ApiService().createNotification(notificationData);
+
                       showBookingCompleteDialog(context);
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));

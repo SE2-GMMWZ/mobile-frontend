@@ -28,12 +28,14 @@ class DockingSpotData {
   });
 
   factory DockingSpotData.fromJson(Map<String, dynamic> json) {
+    final location = json['location'] ?? {};
+
     return DockingSpotData(
       dock_id: json['dock_id'] as String?,
       name: json['name'] as String? ?? '',
-      town: json['town'] as String? ?? '',
-      latitude: json['latitude'] as String? ?? '',
-      longitude: json['longitude'] as String? ?? '',
+      town: location['town'] as String? ?? '',
+      latitude: (location['latitude']?.toString()) ?? '',
+      longitude: (location['longitude']?.toString()) ?? '',
       description: json['description'] as String? ?? '',
       owner_id: json['owner_id'] as String? ?? '',
       services: json['services'] as String? ?? '',
@@ -43,6 +45,7 @@ class DockingSpotData {
       availability: json['availability'] as String? ?? '',
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {

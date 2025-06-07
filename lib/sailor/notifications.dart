@@ -1,20 +1,35 @@
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/services/user_storage.dart';
 import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import '../services/api_service.dart';
 import '../data/notifications_data.dart';
 
 class NotificationsPage extends StatefulWidget {
+  const NotificationsPage({super.key});
+
   @override
-  _NotificationsPageState createState() => _NotificationsPageState();
+  State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  late Future<List<NotificationData>> _notificationsFuture;
+  List<NotificationData> notifications = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _notificationsFuture = ApiService().getNotifications();
+    _loadNotifications();
+  }
+
+
+  Future<void> _loadNotifications() async {
+    final fetched = await ApiService().getNotifications();
+    print('Fetched spots: ${fetched.length}');
+    setState(() {
+      notifications = fetched;
+      isLoading = false;
+    });
   }
 
   @override
@@ -24,32 +39,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
         title: Text('Notifications'),
       ),
       drawer: AppDrawer(),
-      body: FutureBuilder<List<NotificationData>>(
-        future: _notificationsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading notifications'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No notifications.'));
-          }
-          final notifications = snapshot.data!;
-          return ListView.builder(
-            padding: EdgeInsets.all(16.0),
-            itemCount: notifications.length,
-            itemBuilder: (context, index) {
-              final n = notifications[index];
-              return Card(
-                child: ListTile(
-                  title: Text(n.message),
-                  subtitle: Text(n.timestamp),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : notifications.isEmpty
+              ? Center(child: Text('No notifications.'))
+              : ListView.builder(
+                  padding: EdgeInsets.all(16.0),
+                  itemCount: notifications.length,
+                  itemBuilder: (context, index) {
+                    final n = notifications[index];
+                    return Card(
+                      child: ListTile(
+                        title: Text(n.message),
+                        subtitle: Text(n.timestamp),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          );
-        },
-      ),
     );
   }
 }

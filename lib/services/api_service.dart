@@ -118,7 +118,7 @@ class ApiService {
 
   Future<List<DockingSpotData>> getDockingSpots() async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list');
+      final response = await _dio.get<Map<String, dynamic>>('/docking-spots/list?limit=10000');
 
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> dockingspots = response.data!['docking_spots'];
@@ -249,12 +249,12 @@ class ApiService {
     }
   }
 
-  Future<List<BookingsData>> getMyDeckBookings() async {
+  Future<List<BookingsData>> getMyDockBookings() async {
     try {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];
 
-      final response = await _dio.get<Map<String, dynamic>>('/bookings/list?sailor_id=${currentUser.id}');
+      final response = await _dio.get<Map<String, dynamic>>('/bookings/list?_id=${currentUser.id}');
 
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> bookings = response.data!['bookings'];
@@ -312,25 +312,42 @@ class ApiService {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];
 
-      final response = await _dio.get<List<dynamic>>('/notifications/list?sailor_id=${currentUser.id}');
+      final response = await _dio.get<Map<String, dynamic>>('/notifications/list?user_id=${currentUser.id}');
+
       if (response.statusCode == 200 && response.data != null) {
-        return response.data!
-            .map((n) => NotificationData.fromJson(n as Map<String, dynamic>))
+        final List<dynamic> notifications = response.data!['notifications'];
+        return notifications
+            .map((guide) => NotificationData.fromJson(guide as Map<String, dynamic>))
             .toList();
       } else {
         return [];
       }
     } catch (e) {
-      print('Get notifications error: $e');
+      print('Get docking spots error: $e');
       return [];
     }
   }
 
+  Future<void> createNotification(Map<String, dynamic> notificationData) async {
+    try {
+      final response = await _dio.post(
+        '/notifications',
+        data: notificationData,
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Failed to create notification');
+      }
+    } catch (e) {
+      print('Create notification error: $e');
+      rethrow;
+    }
+  }
 
   // REVIEWS
-  Future<List<ReviewData>> getReviews() async {
+  Future<List<ReviewData>> getReviews(String dockId) async {
     try {
-      final response = await _dio.get('/reviews/list');
+      final response = await _dio.get('/reviews/list?dock_id=${dockId}');
       if (response.statusCode == 200) {
         
         // If it's already a List, use it directly
