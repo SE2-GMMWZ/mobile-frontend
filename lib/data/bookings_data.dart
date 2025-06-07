@@ -45,4 +45,5 @@ class BookingsData {
       'people': people,
     };
   }
+
 }

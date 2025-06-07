@@ -23,7 +23,7 @@ class _GuideDetailsPageState extends State<GuideDetailsPage> {
   }
 
   Future<void> _loadAuthor() async {
-    final result = await ApiService().getAuthorById(widget.guide.authorId);
+    final result = await ApiService().getUserById(widget.guide.authorId);
 
     setState(() {
       author = result;

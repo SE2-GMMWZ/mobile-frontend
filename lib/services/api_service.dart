@@ -213,9 +213,9 @@ class ApiService {
     }
   }
 
-  Future<UserProfile?> getAuthorById(String authorId) async {
+  Future<UserProfile?> getUserById(String userId) async {
     try {
-      final response = await _dio.get('/users/$authorId');
+      final response = await _dio.get('/users/$userId');
 
       if (response.statusCode == 200 && response.data != null) {
         final userJson = response.data['user'];
@@ -394,36 +394,36 @@ class ApiService {
 
   
   Future<bool> createReview(ReviewData review) async {
-  try {
-    // Convert the review to JSON, excluding the review_id if it's empty
-    final reviewJson = review.toJson();
-    if (reviewJson['review_id'] == '') {
-      reviewJson.remove('review_id');
-    }
-    
-    print('Sending review data: ${jsonEncode(reviewJson)}');
-    
-    final response = await _dio.post(
-      '/reviews',
-      data: reviewJson,
-    );
-    
-    if (response.statusCode == 201) {
-      print('Review created successfully');
-      return true;
-    } else {
-      print('Create review error: Status ${response.statusCode}');
-      print('Response: ${response.data}');
+    try {
+      // Convert the review to JSON, excluding the review_id if it's empty
+      final reviewJson = review.toJson();
+      if (reviewJson['review_id'] == '') {
+        reviewJson.remove('review_id');
+      }
+      
+      print('Sending review data: ${jsonEncode(reviewJson)}');
+      
+      final response = await _dio.post(
+        '/reviews',
+        data: reviewJson,
+      );
+      
+      if (response.statusCode == 201) {
+        print('Review created successfully');
+        return true;
+      } else {
+        print('Create review error: Status ${response.statusCode}');
+        print('Response: ${response.data}');
+        return false;
+      }
+    } catch (e) {
+      print('Create review error: $e');
+      if (e is DioException) {
+        print('DioException details: ${e.response?.data}');
+      }
       return false;
     }
-  } catch (e) {
-    print('Create review error: $e');
-    if (e is DioException) {
-      print('DioException details: ${e.response?.data}');
-    }
-    return false;
   }
-}
   
 }
 

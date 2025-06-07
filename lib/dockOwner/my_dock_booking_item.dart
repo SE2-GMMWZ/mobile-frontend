@@ -1,34 +1,47 @@
 import 'package:book_and_dock_mobile/data/bookings_data.dart';
 import 'package:book_and_dock_mobile/data/docking_spot_data.dart';
+import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/dialogs/details_mydock_booking.dart';
 import 'package:book_and_dock_mobile/services/api_service.dart';
 import 'package:flutter/material.dart';
-import '../dialogs/details_booking.dart';
 
 
-class BookingItem extends StatefulWidget {
+class MyDockBookingItem extends StatefulWidget {
   final BookingsData booking;
   final VoidCallback? onDeleted;
 
-  const BookingItem({required this.booking, this.onDeleted});
+  const MyDockBookingItem({required this.booking, this.onDeleted});
 
   @override
-  State<BookingItem> createState() => _BookingItemState();
+  State<MyDockBookingItem> createState() => _MyDockBookingItemState();
 }
 
-class _BookingItemState extends State<BookingItem> {
+class _MyDockBookingItemState extends State<MyDockBookingItem> {
   DockingSpotData? dock;
+  UserProfile? sailorBook;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadDock();
+    _loadBooker();
   }
 
   Future<void> _loadDock() async {
     final result = await ApiService().getDockById(widget.booking.dockId);
     setState(() {
       dock = result;
+      isLoading = false;
+    });
+  }
+
+  Future<void> _loadBooker() async {
+    final result = await ApiService().getUserById(widget.booking.sailorId);
+    print("USER:\n${result}");
+
+    setState(() {
+      sailorBook = result;
       isLoading = false;
     });
   }
@@ -42,7 +55,20 @@ class _BookingItemState extends State<BookingItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text(dock?.name ?? widget.booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(dock?.name ?? widget.booking.dockId, style: TextStyle(fontWeight: FontWeight.bold)),
+                  Row(
+                    children: [
+                      Text(sailorBook?.name ?? 'Unknown Sailor', style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(width: 5,),
+                      Text(sailorBook?.surname ?? 'Unknown Sailor', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ],
+                  )
+                  
+                ],
+              ),
               subtitle: Text(
                 'Booking for ${widget.booking.people} person/s\n'
                 '${DateTime.parse(widget.booking.startDate).toLocal().toString().split(' ')[0]} - '
@@ -98,7 +124,7 @@ class _BookingItemState extends State<BookingItem> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      viewDetailsBooking(context, widget.booking, dock);
+                      viewMyDockDetailsBooking(context, widget.booking, dock, sailorBook!);
                     },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.black),

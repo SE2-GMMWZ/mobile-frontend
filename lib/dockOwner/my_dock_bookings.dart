@@ -1,5 +1,6 @@
 import 'package:book_and_dock_mobile/data/bookings_data.dart';
 import 'package:book_and_dock_mobile/data/user_data.dart';
+import 'package:book_and_dock_mobile/dockOwner/my_dock_booking_item.dart';
 import 'package:book_and_dock_mobile/sailor/booking_item.dart';
 import 'package:book_and_dock_mobile/sailor/notifications.dart';
 import 'package:book_and_dock_mobile/services/user_storage.dart';
@@ -61,7 +62,7 @@ class _MyDockBookingsPageState extends State<MyDockBookingsPage> {
             : ListView.builder(
                 itemCount: bookings.length,
                 itemBuilder: (context, index) {
-                  return BookingItem(booking: bookings[index], onDeleted: () async{ await _loadBookings();},);
+                  return MyDockBookingItem(booking: bookings[index], onDeleted: () async{ await _loadBookings();},);
                 },
               ),
       ),
