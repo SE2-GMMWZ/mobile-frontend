@@ -254,7 +254,7 @@ class ApiService {
       final currentUser = await UserStorage.currentUser;
       if (currentUser == null) return [];
 
-      final response = await _dio.get<Map<String, dynamic>>('/bookings/list?_id=${currentUser.id}');
+      final response = await _dio.get<Map<String, dynamic>>('/bookings/list?dock_owner_id=${currentUser.id}');
 
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> bookings = response.data!['bookings'];

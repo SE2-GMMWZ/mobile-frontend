@@ -23,7 +23,7 @@ class _MyDockBookingsPageState extends State<MyDockBookingsPage> {
   }
 
   Future<void> _loadBookings() async {
-    final fetched = await ApiService().getBookings();
+    final fetched = await ApiService().getMyDockBookings();
 
     print('Filtered bookings: ${fetched.length}');
 
