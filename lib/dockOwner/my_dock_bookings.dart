@@ -58,7 +58,7 @@ class _MyDockBookingsPageState extends State<MyDockBookingsPage> {
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: bookings.isEmpty
-            ? Center(child: CircularProgressIndicator())
+            ? Center(child: Text("No bookings in your docks yet."))
             : ListView.builder(
                 itemCount: bookings.length,
                 itemBuilder: (context, index) {
