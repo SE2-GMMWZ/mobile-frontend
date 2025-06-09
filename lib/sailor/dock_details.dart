@@ -52,6 +52,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   DateTime? fromDate;
   DateTime? toDate;
   int selectedPeople = 1;
+  UserProfile? _currentUser;
 
   List<ReviewData> _reviews = [];
   bool _loadingreviews = true;
@@ -81,6 +82,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   void initState() {
     super.initState();
     _fetchReviews();
+    _loadCurrentUser();
   }
 
   @override
@@ -89,6 +91,13 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     super.dispose();
   }
 
+ Future<void> _loadCurrentUser() async {
+    final user = await UserStorage.currentUser;
+    setState(() {
+      _currentUser = user;
+    });
+  }
+  
   Future<String> _createPaymentIntent(int amountInPLN) async {
     final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
 
@@ -114,15 +123,27 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
   }
 
 
-  Future<void> _fetchReviews() async {
+  Map<String, UserProfile> _userProfiles = {};
+
+Future<void> _fetchReviews() async {
   setState(() {
     _loadingreviews = true;
   });
-  
+
   try {
     final reviews = await ApiService().getReviews(widget.spot.dock_id!);
+
+    // Fetch user profiles for all unique reviewerIds
+    final uniqueIds = reviews.map((r) => r.reviewerId).toSet();
+    final userProfiles = <String, UserProfile>{};
+    for (final id in uniqueIds) {
+      final user = await ApiService().getUserById(id);
+      if (user != null) userProfiles[id] = user;
+    }
+
     setState(() {
       _reviews = reviews;
+      _userProfiles = userProfiles;
       _loadingreviews = false;
     });
   } catch (e) {
@@ -131,7 +152,6 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
       _reviews = [];
       _loadingreviews = false;
     });
-    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Failed to load reviews'))
     );
@@ -178,6 +198,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
       comment: _reviewController.text.trim(),
       dateOfReview: DateTime.now().toUtc().toIso8601String(),
       rating: _selectedRating,
+      dockingSpotId: widget.spot.dock_id!,
     );
 
     print('Submitting review: ${review.toJson()}');
@@ -403,6 +424,11 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
 
 
   Widget _reviewItem(ReviewData review) {
+    final user = _userProfiles[review.reviewerId];
+    final displayName = user != null
+      ? "${user.name} ${user.surname}"
+      : "User ${review.reviewerId}";
+      final isMine = review.reviewerId == (_currentUser?.id ?? '');
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8.0),
       padding: EdgeInsets.all(12.0),
@@ -419,7 +445,7 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
             children: [
               Expanded( // Wrap the text in Expanded to prevent overflow
               child: Text(
-                "User ${review.reviewerId}",
+                displayName,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -433,6 +459,18 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
                   size: 16,
                 )),
               ),
+              if (isMine) ...[
+              IconButton(
+                icon: Icon(Icons.edit, size: 18),
+                onPressed: () => _showEditReviewDialog(review),
+                tooltip: "Edit",
+              ),
+              IconButton(
+                icon: Icon(Icons.delete, size: 18),
+                onPressed: () => _deleteReview(review),
+                tooltip: "Delete",
+              ),
+            ]
             ],
           ),
           SizedBox(height: 4),
@@ -447,6 +485,78 @@ class _DockDetailsPageState extends State<DockDetailsPage> {
     );
   }
 
+void _showEditReviewDialog(ReviewData review) {
+  final controller = TextEditingController(text: review.comment);
+  int rating = review.rating;
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Edit Review"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: List.generate(5, (index) => IconButton(
+              icon: Icon(
+                index < rating ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+              ),
+              onPressed: () {
+                rating = index + 1;
+                (context as Element).markNeedsBuild();
+              },
+            )),
+          ),
+          TextField(
+            controller: controller,
+            maxLines: 3,
+            decoration: InputDecoration(hintText: "Edit your review..."),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text("Cancel"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final updated = ReviewData(
+              reviewId: review.reviewId,
+              reviewerId: review.reviewerId,
+              comment: controller.text,
+              dateOfReview: DateTime.now().toUtc().toIso8601String(),
+              rating: rating,
+              dockingSpotId: review.dockingSpotId,
+            );
+            await ApiService().updateReview(review.reviewId, updated);
+            Navigator.pop(context);
+            _fetchReviews();
+          },
+          child: Text("Save"),
+        ),
+      ],
+    ),
+  );
+}
+Future<void> _deleteReview(ReviewData review) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Delete Review"),
+      content: Text("Are you sure you want to delete this review?"),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel")),
+        ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text("Delete")),
+      ],
+    ),
+  );
+  if (confirmed == true) {
+    await ApiService().deleteReview(review.reviewId);
+    _fetchReviews();
+  }
+}
   Widget _datePickerBox(String label, DateTime? date, bool isFrom) {
     return GestureDetector(
       onTap: () => _selectDate(context, isFrom),

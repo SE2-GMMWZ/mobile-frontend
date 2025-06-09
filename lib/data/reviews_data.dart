@@ -4,6 +4,7 @@ class ReviewData {
   final String comment;
   final String dateOfReview;
   final int rating;
+  final String dockingSpotId;
 
   ReviewData({
     required this.reviewId,
@@ -11,6 +12,7 @@ class ReviewData {
     required this.comment,
     required this.dateOfReview,
     required this.rating,
+    required this.dockingSpotId
   });
 
   factory ReviewData.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class ReviewData {
       comment: json['comment']?.toString() ?? '',
       dateOfReview: json['date_of_review']?.toString() ?? DateTime.now().toIso8601String(),
       rating: json['rating'] is int ? json['rating'] : (json['rating'] as num?)?.toInt() ?? 0,
+      dockingSpotId: json['docking_spot_id']?.toString() ?? '',
     );
   }
 
@@ -30,6 +33,7 @@ class ReviewData {
       'comment': comment,
       'date_of_review': dateOfReview,
       'rating': rating,
+      'docking_spot_id': dockingSpotId,
     };
     
     // Only include review_id if it's not empty

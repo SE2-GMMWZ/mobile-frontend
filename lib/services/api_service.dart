@@ -345,30 +345,24 @@ class ApiService {
   }
 
   // REVIEWS
+    // Fetch all reviews for a specific dock, filtering locally if needed
   Future<List<ReviewData>> getReviews(String dockId) async {
     try {
-      final response = await _dio.get('/reviews/list?dock_id=${dockId}');
-      if (response.statusCode == 200) {
-        
-        // If it's already a List, use it directly
+      final response = await _dio.get('/reviews/list?docking_spot_id=$dockId');
+      if (response.statusCode == 200 && response.data != null) {
+        List<dynamic> reviewsJson;
         if (response.data is List) {
-          final List<dynamic> reviewsJson = response.data;
-          return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
+          reviewsJson = response.data;
+        } else if (response.data is Map && response.data['reviews'] is List) {
+          reviewsJson = response.data['reviews'];
+        } else {
+          return [];
         }
-        
-        // If it's a Map, look for common array keys
-        if (response.data is Map) {
-          final Map<String, dynamic> responseMap = response.data;
-          
-          // Try common keys in order of likelihood
-          final possibleKeys = ['data', 'reviews', 'items', 'results'];
-          for (String key in possibleKeys) {
-            if (responseMap.containsKey(key) && responseMap[key] is List) {
-              final List<dynamic> reviewsJson = responseMap[key];
-              return reviewsJson.map((json) => ReviewData.fromJson(json)).toList();
-            }
-          }
-        }
+        // Filter locally just in case
+        return reviewsJson
+            .map((json) => ReviewData.fromJson(json))
+            .where((review) => review.dockingSpotId == dockId)
+            .toList();
       }
       return [];
     } catch (e) {
@@ -377,13 +371,12 @@ class ApiService {
     }
   }
 
-  
-
+  // Get a single review by its ID
   Future<ReviewData?> getReviewById(String id) async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>('/reviews/$id');
+      final response = await _dio.get('/reviews/$id');
       if (response.statusCode == 200 && response.data != null) {
-        return ReviewData.fromJson(response.data!);
+        return ReviewData.fromJson(response.data);
       }
       return null;
     } catch (e) {
@@ -392,22 +385,14 @@ class ApiService {
     }
   }
 
-  
+  // Create a new review
   Future<bool> createReview(ReviewData review) async {
     try {
-      // Convert the review to JSON, excluding the review_id if it's empty
       final reviewJson = review.toJson();
       if (reviewJson['review_id'] == '') {
         reviewJson.remove('review_id');
       }
-      
-      print('Sending review data: ${jsonEncode(reviewJson)}');
-      
-      final response = await _dio.post(
-        '/reviews',
-        data: reviewJson,
-      );
-      
+      final response = await _dio.post('/reviews', data: reviewJson);
       if (response.statusCode == 201) {
         print('Review created successfully');
         return true;
@@ -421,6 +406,28 @@ class ApiService {
       if (e is DioException) {
         print('DioException details: ${e.response?.data}');
       }
+      return false;
+    }
+  }
+
+  // Update a review by its ID
+  Future<bool> updateReview(String reviewId, ReviewData review) async {
+    try {
+      final response = await _dio.put('/reviews/$reviewId', data: review.toJson());
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Update review error: $e');
+      return false;
+    }
+  }
+
+  // Delete a review by its ID
+  Future<bool> deleteReview(String reviewId) async {
+    try {
+      final response = await _dio.delete('/reviews/$reviewId');
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Delete review error: $e');
       return false;
     }
   }
