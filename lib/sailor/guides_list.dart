@@ -6,6 +6,11 @@ import '../profile/my_profile.dart';
 import 'guide_item.dart';
 import '../services/api_service.dart';
 
+import '../notifications/notification_poller.dart';
+import '../notifications/schedule_notifications.dart';
+
+late NotificationPoller _notificationPoller;
+
 class GuidesPage extends StatefulWidget {
   @override
   State<GuidesPage> createState() => _GuidesPageState();
@@ -21,7 +26,16 @@ class _GuidesPageState extends State<GuidesPage> {
   void initState() {
     super.initState();
     _loadGuides();
+    _notificationPoller = NotificationPoller(context);
+  _notificationPoller.start();
+  scheduleLocalReminders(context);
   }
+
+@override
+void dispose() {
+  _notificationPoller.stop();
+  super.dispose();
+}
 
   Future<void> _loadGuides() async {
     final fetched = await ApiService().getGuides();

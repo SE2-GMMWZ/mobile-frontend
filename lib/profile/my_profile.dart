@@ -8,6 +8,11 @@ import '../sailor/my_bookings.dart';
 import '../app_drawer.dart';
 import '../data/user_data.dart';
 import '../services/user_storage.dart';
+import '../notifications/schedule_notifications.dart';
+import '../notifications/notification_poller.dart';
+
+late NotificationPoller _notificationPoller;
+
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -23,11 +28,20 @@ class _MyProfilePageState extends State<MyProfilePage> {
   void initState() {
     super.initState();
     _loadUser();
+    _notificationPoller = NotificationPoller(context);
+  _notificationPoller.start();
+  scheduleLocalReminders(context);
   }
 
   void _loadUser() {
     _currentUserFuture = UserStorage.currentUser;
   }
+
+@override
+void dispose() {
+  _notificationPoller.stop();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {

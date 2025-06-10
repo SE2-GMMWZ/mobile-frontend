@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import '../services/api_service.dart';
 import '../data/notifications_data.dart';
+import '../notifications/notification_poller.dart';
+import '../notifications/schedule_notifications.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -11,6 +13,8 @@ class NotificationsPage extends StatefulWidget {
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
+
+late NotificationPoller _notificationPoller;
 
 class _NotificationsPageState extends State<NotificationsPage> {
   List<NotificationData> notifications = [];
@@ -20,8 +24,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
   void initState() {
     super.initState();
     _loadNotifications();
+    _notificationPoller = NotificationPoller(context);
+    _notificationPoller.start();
+    scheduleLocalReminders(context);
   }
 
+void dispose() {
+  _notificationPoller.stop();
+  super.dispose();
+}
 
   Future<void> _loadNotifications() async {
     final fetched = await ApiService().getNotifications();

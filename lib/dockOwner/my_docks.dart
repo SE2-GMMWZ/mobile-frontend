@@ -8,7 +8,10 @@ import 'package:flutter/material.dart';
 import '../app_drawer.dart';
 import '../sailor/notifications.dart';
 import 'add_dock.dart';
+import '../notifications/schedule_notifications.dart';
+import '../notifications/notification_poller.dart';
 
+late NotificationPoller _notificationPoller;
 class MyDocksPage extends StatefulWidget {
 
   const MyDocksPage({super.key});
@@ -28,7 +31,16 @@ class _MyDocksPageState extends State<MyDocksPage> {
     super.initState();
     _loadUser();
     _loadDockingSpots();
+     _notificationPoller = NotificationPoller(context);
+  _notificationPoller.start();
+  scheduleLocalReminders(context);
   }
+
+@override
+void dispose() {
+  _notificationPoller.stop();
+  super.dispose();
+}
 
   void _loadUser() {
     _currentUserFuture = UserStorage.currentUser;

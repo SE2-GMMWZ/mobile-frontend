@@ -7,6 +7,10 @@ import '../app_drawer.dart';
 import 'notifications.dart';
 import '../profile/my_profile.dart';
 import '../services/api_service.dart';
+import '../notifications/notification_poller.dart';
+import '../notifications/schedule_notifications.dart';
+
+late NotificationPoller _notificationPoller;
 
 class MyBookingsPage extends StatefulWidget {
   @override
@@ -20,7 +24,15 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
   void initState() {
     super.initState();
     _loadBookings();
+    _notificationPoller = NotificationPoller(context);
+  _notificationPoller.start();
+  scheduleLocalReminders(context);
   }
+  @override
+void dispose() {
+  _notificationPoller.stop();
+  super.dispose();
+}
 
   Future<void> _loadBookings() async {
     final fetched = await ApiService().getBookings();

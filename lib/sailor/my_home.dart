@@ -7,11 +7,15 @@ import 'dock_item.dart';
 import 'notifications.dart';
 import '../data/docking_spot_data.dart';
 import '../services/api_service.dart';
+import '../notifications/notification_poller.dart';
+import '../notifications/schedule_notifications.dart';
 
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
+ late NotificationPoller _notificationPoller;
 
 class _HomePageState extends State<HomePage> {
   late Future<UserProfile?> _currentUserFuture;
@@ -25,6 +29,15 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadUser();
     _loadDockingSpots();
+    _notificationPoller = NotificationPoller(context);
+    _notificationPoller.start();
+    scheduleLocalReminders(context);
+  }
+
+  @override
+  void dispose() {
+    _notificationPoller.stop();
+    super.dispose();
   }
 
   void _loadUser() {

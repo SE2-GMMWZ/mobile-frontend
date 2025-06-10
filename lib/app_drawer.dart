@@ -6,6 +6,8 @@ import 'sailor/my_home.dart';
 import 'sailor/guides_list.dart';
 import 'sailor/my_bookings.dart';
 import 'sailor/notifications.dart';
+import '../notifications/schedule_notifications.dart';
+import '../notifications/notification_poller.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -14,6 +16,8 @@ class AppDrawer extends StatefulWidget {
   State<AppDrawer> createState() => _AppDrawerState();
 }
 
+late NotificationPoller _notificationPoller;
+
 class _AppDrawerState extends State<AppDrawer> {
   String? _role;
 
@@ -21,6 +25,9 @@ class _AppDrawerState extends State<AppDrawer> {
   void initState() {
     super.initState();
     _loadRole();
+    _notificationPoller = NotificationPoller(context);
+    _notificationPoller.start();
+    scheduleLocalReminders(context);
   }
 
   Future<void> _loadRole() async {
